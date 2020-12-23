@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="NSwag.MSBuild" Version="13.9.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<Target Name="NSwag" AfterTargets="Build">
+		<Exec Command="$(NSwagExe_x86) run &quot;$(ProjectDir)nswag.json&quot; /variables:OutDir=$(OutDir),ProjectDir=$(ProjectDir)" />
+		<RemoveDir Directories="$(OutDir)References" />
+		<Exec Command="npm pack" />
+		<Touch Files="$(NpmInstallStampFile)" AlwaysCreate="true" />
+	</Target>
+
+</Project>

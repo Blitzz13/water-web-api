@@ -1,0 +1,6 @@
+.npmignore
+bin
+obj
+*.json
+GeneratedClients.csproj
+*.tgz

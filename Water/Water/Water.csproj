@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DocumentationFile>C:\Users\thebe\source\repos\water-web-api\Water\Water\Water.xml</DocumentationFile>
+	  <OutputPath></OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="NSwag.AspNetCore" Version="13.9.4" />
+		<PackageReference Include="NSwag.MSBuild" Version="13.9.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Water.Services.Impl\Water.Services.Impl.csproj" />
+	  <ProjectReference Include="..\Water.Services\Water.Services.csproj" />
+	</ItemGroup>
+
+</Project>
