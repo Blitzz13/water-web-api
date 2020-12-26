@@ -11,7 +11,7 @@ namespace Water
 	public class Startup
 	{
 		public IConfiguration Configuration { get; }
-		
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -20,10 +20,16 @@ namespace Water
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services
-				.AddCors()
-				.AddControllers()
-				.AddNewtonsoftJson();
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsPolicy",
+					builder => builder.AllowAnyOrigin()
+					.AllowAnyMethod()
+					.AllowAnyHeader());
+			});
+
+			services.AddControllers()
+					.AddNewtonsoftJson();
 
 			// configure strongly typed settings object
 			services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
@@ -60,7 +66,9 @@ namespace Water
 			app.UseOpenApi();
 
 			app.UseSwaggerUi3();
-
+			
+			app.UseCors("CorsPolicy");
+			
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();

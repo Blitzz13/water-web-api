@@ -3,7 +3,7 @@
 namespace Water.Entities
 {
 	/// <summary>
-	/// User
+	/// Representes user
 	/// </summary>
 	public class User
 	{

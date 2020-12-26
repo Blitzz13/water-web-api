@@ -1,7 +1,7 @@
 ﻿namespace Water.Entities
 {
 	/// <summary>
-	/// Authentication request
+	/// Represents authentication request
 	/// </summary>
 	public class AuthenticateRequest
 	{

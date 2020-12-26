@@ -55,7 +55,7 @@
 				"operationId": "Users_Register",
 				"requestBody": {
 					"x-name": "model",
-					"description": "UserAuthentication request model",
+					"description": "UserRegister user model",
 					"content": {
 						"application/json": {
 							"schema": {
@@ -68,7 +68,7 @@
 				},
 				"responses": {
 					"200": {
-						"description": "Authentication response",
+						"description": "Ok response",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -85,13 +85,13 @@
 		"schemas": {
 			"AuthenticateResponse": {
 				"type": "object",
-				"description": "Authentication response",
+				"description": "Representes authentication response",
 				"additionalProperties": false,
 				"properties": {
 					"id": {
-						"type": "integer",
+						"type": "string",
 						"description": "Gets or sets id",
-						"format": "int32"
+						"nullable": true
 					},
 					"fullName": {
 						"type": "string",
@@ -103,16 +103,37 @@
 						"description": "Gets or sets username",
 						"nullable": true
 					},
+					"tokenProvider": {
+						"description": "Gets or sets Token",
+						"nullable": true,
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/TokenProvider"
+							}
+						]
+					}
+				}
+			},
+			"TokenProvider": {
+				"type": "object",
+				"description": "Represents token provider",
+				"additionalProperties": false,
+				"properties": {
 					"token": {
 						"type": "string",
-						"description": "Gets or sets Token",
+						"description": "Gets or sets token",
 						"nullable": true
+					},
+					"expiresInSeconds": {
+						"type": "integer",
+						"description": "Gets or sets token expiration in seconds",
+						"format": "int64"
 					}
 				}
 			},
 			"AuthenticateRequest": {
 				"type": "object",
-				"description": "Authentication request",
+				"description": "Represents authentication request",
 				"additionalProperties": false,
 				"properties": {
 					"username": {
@@ -129,7 +150,7 @@
 			},
 			"User": {
 				"type": "object",
-				"description": "User",
+				"description": "Representes user",
 				"additionalProperties": false,
 				"properties": {
 					"id": {
@@ -169,7 +190,7 @@
 			},
 			"UserRole": {
 				"type": "string",
-				"description": "User role",
+				"description": "Representes enumeration user roles",
 				"x-enumNames": [
 					"Administrator",
 					"User",

@@ -1,14 +1,14 @@
 ﻿namespace Water.Entities
 {
 	/// <summary>
-	/// Authentication response
+	/// Representes authentication response
 	/// </summary>
 	public class AuthenticateResponse
 	{
 		/// <summary>
 		/// Gets or sets id
 		/// </summary>
-		public int Id { get; set; }
+		public string Id { get; set; }
 		
 		/// <summary>
 		/// Gets or sets full name
@@ -23,6 +23,6 @@
 		/// <summary>
 		/// Gets or sets Token
 		/// </summary>
-		public string Token { get; set; }
+		public TokenProvider TokenProvider { get; set; }
 	}
 }

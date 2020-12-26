@@ -2,12 +2,14 @@
 {
 	public class AuthenticateResponse
 	{
-		public int Id { get; set; }
+		public string Id { get; set; }
 		
 		public string FullName { get; set; }
 		
 		public string Username { get; set; }
-		
-		public string Token { get; set; }
+
+		public UserRole Role { get; set; }
+
+		public TokenProvider TokenProvider { get; set; }
 	}
 }

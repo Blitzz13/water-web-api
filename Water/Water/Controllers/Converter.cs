@@ -52,10 +52,20 @@ namespace Water.Controllers
 				Username = value.Username,
 				FullName = value.FullName,
 				Id = value.Id,
+				TokenProvider = ConvertTokenProviderToEntity(value.TokenProvider),
+			};
+		}
+
+		public static Entities.TokenProvider ConvertTokenProviderToEntity(Services.TokenProvider value)
+		{
+			return new Entities.TokenProvider
+			{
 				Token = value.Token,
+				ExpiresInSeconds = value.ExpiresInSeconds,
 			};
 		}
 		#endregion
 	}
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

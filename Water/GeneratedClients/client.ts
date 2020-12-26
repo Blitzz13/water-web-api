@@ -16,8 +16,8 @@ export interface IUsersClient {
     authenticate(model: AuthenticateRequest): Promise<AuthenticateResponse>;
     /**
      * Registers a user
-     * @param model UserAuthentication request model
-     * @return Authentication response
+     * @param model UserRegister user model
+     * @return Ok response
      */
     register(model: User): Promise<string>;
 }
@@ -76,8 +76,8 @@ export class UsersClient implements IUsersClient {
 
     /**
      * Registers a user
-     * @param model UserAuthentication request model
-     * @return Authentication response
+     * @param model UserRegister user model
+     * @return Ok response
      */
     register(model: User): Promise<string> {
         let url_ = this.baseUrl + "/Users/Register";
@@ -117,19 +117,27 @@ export class UsersClient implements IUsersClient {
     }
 }
 
-/** Authentication response */
+/** Representes authentication response */
 export interface AuthenticateResponse {
     /** Gets or sets id */
-    id?: number;
+    id?: string | undefined;
     /** Gets or sets full name */
     fullName?: string | undefined;
     /** Gets or sets username */
     username?: string | undefined;
     /** Gets or sets Token */
-    token?: string | undefined;
+    tokenProvider?: TokenProvider | undefined;
 }
 
-/** Authentication request */
+/** Represents token provider */
+export interface TokenProvider {
+    /** Gets or sets token */
+    token?: string | undefined;
+    /** Gets or sets token expiration in seconds */
+    expiresInSeconds?: number;
+}
+
+/** Represents authentication request */
 export interface AuthenticateRequest {
     /** Gets or sets username */
     username?: string | undefined;
@@ -137,7 +145,7 @@ export interface AuthenticateRequest {
     password?: string | undefined;
 }
 
-/** User */
+/** Representes user */
 export interface User {
     /** Gets or sets user id */
     id?: string | undefined;
@@ -153,7 +161,7 @@ export interface User {
     password?: string | undefined;
 }
 
-/** User role */
+/** Representes enumeration user roles */
 export enum UserRole {
     Administrator = "Administrator",
     User = "User",

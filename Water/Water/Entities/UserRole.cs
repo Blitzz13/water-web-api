@@ -3,7 +3,7 @@
 namespace Water.Entities
 {
 	/// <summary>
-	/// User role
+	/// Representes enumeration user roles
 	/// </summary>
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum UserRole

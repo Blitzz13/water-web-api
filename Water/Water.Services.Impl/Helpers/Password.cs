@@ -1,4 +1,5 @@
 ﻿using System;
+using DATA = Water.Data;
 using System.Security.Cryptography;
 
 namespace Water.Services.Impl.Helpers
@@ -18,6 +19,26 @@ namespace Water.Services.Impl.Helpers
 			Array.Copy(hash, 0, hashBytes, 16, 20);
 
 			return Convert.ToBase64String(hashBytes);
+		}
+
+		public static void UnhashPassword(string password, User user, out byte[] hashBytes, out byte[] hash)
+		{
+			hashBytes = Convert.FromBase64String(user.Password);
+			byte[] salt = new byte[16];
+			Array.Copy(hashBytes, 0, salt, 0, 16);
+			var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000);
+			hash = pbkdf2.GetBytes(20);
+		}
+
+		public static void ValidatePassword(byte[] hashBytes, byte[] hash)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				if (hashBytes[i + 16] != hash[i])
+				{
+					throw new Exception("Wrong username or passowrd");
+				}
+			}
 		}
 	}
 }

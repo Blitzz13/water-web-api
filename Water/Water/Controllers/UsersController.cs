@@ -4,7 +4,7 @@ using Water.Services;
 namespace Water.Controllers
 {
 	/// <summary>
-	/// User controller
+	/// Represents user controller
 	/// </summary>
 	[ApiController]
 	[Route("[controller]")]
@@ -45,9 +45,9 @@ namespace Water.Controllers
 		/// <summary>
 		/// Registers a user
 		/// </summary>
-		/// <param name="model" in="body"><see cref="Entities.User"/>Authentication request model</param>
+		/// <param name="model" in="body"><see cref="Entities.User"/>Register user model</param>
 		/// <returns> Register message </returns>
-		/// <response code="200"><see cref="OkResult" />Authentication response</response>
+		/// <response code="200"><see cref="OkResult" />Ok response</response>
 		/// <response code="400"><see cref="BadRequestObjectResult"/>Bad request</response>
 		[HttpPost("Register")]
 		public ActionResult<string> Register(Entities.User model)

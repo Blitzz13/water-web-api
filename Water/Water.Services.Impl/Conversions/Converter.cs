@@ -1,24 +1,41 @@
 ﻿using DATA_MODELS = Water.Data.Models;
+
 namespace Water.Services.Impl.Conversions
 {
-	class Converter
+	public static class Converter
 	{
 		#region Convert to service
-		public User ConvertUserToService(DATA_MODELS.User value)
+		public static User ConvertUserToService(DATA_MODELS.User value)
 		{
 			return new User
 			{
+				Id = value.Id,
 				Email = value.Email,
 				FullName = value.Email,
 				Password = value.Password,
 				Username = value.Username,
-
+				Role = ConvertUserRoleToService(value.Role),
 			};
+		}
+
+		public static UserRole ConvertUserRoleToService(DATA_MODELS.UserRole value)
+		{
+			switch (value)
+			{
+				case DATA_MODELS.UserRole.Administrator:
+					return UserRole.Administrator;
+				case DATA_MODELS.UserRole.User:
+					return UserRole.User;
+				case DATA_MODELS.UserRole.Company:
+					return UserRole.Company;
+				default:
+					throw new System.Exception($"User role '{value}' is not supported in the current context");
+			}
 		}
 		#endregion
 
 		#region Convert to data
-		public DATA_MODELS.User ConvertUserToData(User value)
+		public static DATA_MODELS.User ConvertUserToData(User value)
 		{
 			return new DATA_MODELS.User
 			{
@@ -30,7 +47,7 @@ namespace Water.Services.Impl.Conversions
 			};
 		}
 
-		public DATA_MODELS.UserRole ConvertUserRoleToData(UserRole value)
+		public static DATA_MODELS.UserRole ConvertUserRoleToData(UserRole value)
 		{
 			switch (value)
 			{
@@ -41,7 +58,7 @@ namespace Water.Services.Impl.Conversions
 				case UserRole.Company:
 					return DATA_MODELS.UserRole.Company;
 				default:
-					throw new System.Exception($"User role {value} is not supported in the current context");
+					throw new System.Exception($"User role '{value}' is not supported in the current context");
 			}
 		}
 		#endregion
