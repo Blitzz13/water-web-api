@@ -3,8 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using Water.Services;
 using Water.Services.Impl;
+using Water.Services.Impl.Helpers;
 
 namespace Water
 {
@@ -29,7 +34,10 @@ namespace Water
 			});
 
 			services.AddControllers()
-					.AddNewtonsoftJson();
+					.AddNewtonsoftJson(options =>
+					{
+						options.SerializerSettings.Converters.Add(new StringEnumConverter());
+					});
 
 			// configure strongly typed settings object
 			services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
@@ -37,7 +45,7 @@ namespace Water
 			// configure DI for application services
 			services.AddScoped<IUserService, UserService>();
 
-			services.AddSwaggerDocument(settings =>
+			services.AddOpenApiDocument(settings =>
 			{
 				settings.SchemaGenerator.Settings.SchemaType = NJsonSchema.SchemaType.OpenApi3;
 				settings.PostProcess = document =>
@@ -46,7 +54,51 @@ namespace Water
 					document.Info.Title = "Example API";
 					document.Info.Description = "REST API for example.";
 				};
+
+				settings.AddSecurity("JWT", new NSwag.OpenApiSecurityScheme
+				{
+					Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+					Name = "Authorization",
+					In = OpenApiSecurityApiKeyLocation.Header,
+					Type = OpenApiSecuritySchemeType.ApiKey,
+				});
+
+				settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+
+				//settings.OperationProcessors.Add(new CustomHeader());
 			});
+
+			//services.AddSwaggerGen(c =>
+			//{
+			//	c.SwaggerDoc("v1", new OpenApiInfo
+			//	{
+			//		Title = "My API",
+			//		Version = "v1",
+			//	});
+
+			//	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+			//	{
+			//		In = ParameterLocation.Header,
+			//		Description = "Please insert JWT with Bearer into field",
+			//		Name = "Authorization",
+			//		Type = SecuritySchemeType.ApiKey
+			//	});
+
+			//	c.AddSecurityRequirement(new OpenApiSecurityRequirement
+			//	{
+			//		{
+			//			new OpenApiSecurityScheme
+			//			{
+			//				Reference = new OpenApiReference
+			//				{
+			//					Type = ReferenceType.SecurityScheme,
+			//					Id = "Bearer"
+			//				}
+			//			},
+			//			new string[] { }
+			//		}
+			//	});
+			//});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,14 +113,14 @@ namespace Water
 
 			app.UseRouting();
 
-			app.UseAuthorization();
+			app.UseMiddleware<JwtMiddleware>();
 
 			app.UseOpenApi();
 
 			app.UseSwaggerUi3();
-			
+
 			app.UseCors("CorsPolicy");
-			
+
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();

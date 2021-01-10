@@ -1,12 +1,10 @@
 ﻿namespace Water.Entities
 {
-	/// <summary>
-	/// Representes authentication response
-	/// </summary>
-	public class AuthenticateResponse
+	public class UserItem
 	{
+
 		/// <summary>
-		/// Gets or sets id
+		/// Gets or sets user id
 		/// </summary>
 		public string Id { get; set; }
 
@@ -16,13 +14,18 @@
 		public string Username { get; set; }
 
 		/// <summary>
-		/// Gets or sets user role
+		/// Gets or sets email
 		/// </summary>
-		public UserRole UserRole { get; set; }
+		public string Email { get; set; }
 
 		/// <summary>
-		/// Gets or sets Token
+		/// Gets or sets user role
 		/// </summary>
-		public TokenProvider TokenProvider { get; set; }
+		public UserRole Role { get; set; }
+
+		/// <summary>
+		/// Gets or sets full name
+		/// </summary>
+		public string FullName { get; set; }
 	}
 }

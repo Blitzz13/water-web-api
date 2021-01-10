@@ -7,22 +7,24 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
-export interface IUsersClient {
+export interface ICompaniesClient {
     /**
      * Authenticates the given login request
      * @param model AuthenticateRequestAuthentication request model
+     * @param authorization (optional) This is a test header
      * @return Authentication response
      */
-    authenticate(model: AuthenticateRequest): Promise<AuthenticateResponse>;
+    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse>;
     /**
      * Registers a user
      * @param model UserRegister user model
+     * @param authorization (optional) This is a test header
      * @return Ok response
      */
-    register(model: User): Promise<string>;
+    register(model: User, authorization?: string | undefined): Promise<string>;
 }
 
-export class UsersClient implements IUsersClient {
+export class CompaniesClient implements ICompaniesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -35,10 +37,11 @@ export class UsersClient implements IUsersClient {
     /**
      * Authenticates the given login request
      * @param model AuthenticateRequestAuthentication request model
+     * @param authorization (optional) This is a test header
      * @return Authentication response
      */
-    authenticate(model: AuthenticateRequest): Promise<AuthenticateResponse> {
-        let url_ = this.baseUrl + "/Users/Authenticate";
+    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse> {
+        let url_ = this.baseUrl + "/Companies/Authenticate";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(model);
@@ -47,6 +50,7 @@ export class UsersClient implements IUsersClient {
             body: content_,
             method: "POST",
             headers: {
+                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
@@ -77,9 +81,221 @@ export class UsersClient implements IUsersClient {
     /**
      * Registers a user
      * @param model UserRegister user model
+     * @param authorization (optional) This is a test header
      * @return Ok response
      */
-    register(model: User): Promise<string> {
+    register(model: User, authorization?: string | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/Companies/Register";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(model);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRegister(_response);
+        });
+    }
+
+    protected processRegister(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <string>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(<any>null);
+    }
+}
+
+export interface IUsersClient {
+    /**
+     * Authenticates the given login request
+     * @param model AuthenticateRequestAuthentication request model
+     * @param authorization (optional) This is a test header
+     * @return Authentication response
+     */
+    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse>;
+    /**
+     * Gets user by given id
+     * @param id String User id
+     * @param authorization (optional) This is a test header
+     * @return User model
+     */
+    getUserById(id: string | null, authorization?: string | undefined): Promise<UserItem>;
+    /**
+     * Authenticates the given login request
+     * @param authorization (optional) This is a test header
+     * @return Authentication response
+     */
+    test(authorization?: string | undefined): Promise<string>;
+    /**
+     * Registers a user
+     * @param model UserRegister user model
+     * @param authorization (optional) This is a test header
+     * @return Ok response with message
+     */
+    register(model: User, authorization?: string | undefined): Promise<string>;
+}
+
+export class UsersClient implements IUsersClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : <any>window;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44356";
+    }
+
+    /**
+     * Authenticates the given login request
+     * @param model AuthenticateRequestAuthentication request model
+     * @param authorization (optional) This is a test header
+     * @return Authentication response
+     */
+    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse> {
+        let url_ = this.baseUrl + "/Users/Authenticate";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(model);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuthenticate(_response);
+        });
+    }
+
+    protected processAuthenticate(response: Response): Promise<AuthenticateResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <AuthenticateResponse>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AuthenticateResponse>(<any>null);
+    }
+
+    /**
+     * Gets user by given id
+     * @param id String User id
+     * @param authorization (optional) This is a test header
+     * @return User model
+     */
+    getUserById(id: string | null, authorization?: string | undefined): Promise<UserItem> {
+        let url_ = this.baseUrl + "/Users/User/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetUserById(_response);
+        });
+    }
+
+    protected processGetUserById(response: Response): Promise<UserItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <UserItem>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserItem>(<any>null);
+    }
+
+    /**
+     * Authenticates the given login request
+     * @param authorization (optional) This is a test header
+     * @return Authentication response
+     */
+    test(authorization?: string | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/Users/Test";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processTest(_response);
+        });
+    }
+
+    protected processTest(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <string>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(<any>null);
+    }
+
+    /**
+     * Registers a user
+     * @param model UserRegister user model
+     * @param authorization (optional) This is a test header
+     * @return Ok response with message
+     */
+    register(model: User, authorization?: string | undefined): Promise<string> {
         let url_ = this.baseUrl + "/Users/Register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -89,6 +305,7 @@ export class UsersClient implements IUsersClient {
             body: content_,
             method: "POST",
             headers: {
+                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
@@ -121,12 +338,19 @@ export class UsersClient implements IUsersClient {
 export interface AuthenticateResponse {
     /** Gets or sets id */
     id?: string | undefined;
-    /** Gets or sets full name */
-    fullName?: string | undefined;
     /** Gets or sets username */
     username?: string | undefined;
+    /** Gets or sets user role */
+    userRole?: UserRole;
     /** Gets or sets Token */
     tokenProvider?: TokenProvider | undefined;
+}
+
+/** Representes enumeration user roles */
+export enum UserRole {
+    Administrator = "Administrator",
+    User = "User",
+    Company = "Company",
 }
 
 /** Represents token provider */
@@ -147,8 +371,6 @@ export interface AuthenticateRequest {
 
 /** Representes user */
 export interface User {
-    /** Gets or sets user id */
-    id?: string | undefined;
     /** Gets or sets username */
     username?: string | undefined;
     /** Gets or sets email */
@@ -161,11 +383,17 @@ export interface User {
     password?: string | undefined;
 }
 
-/** Representes enumeration user roles */
-export enum UserRole {
-    Administrator = "Administrator",
-    User = "User",
-    Company = "Company",
+export interface UserItem {
+    /** Gets or sets user id */
+    id?: string | undefined;
+    /** Gets or sets username */
+    username?: string | undefined;
+    /** Gets or sets email */
+    email?: string | undefined;
+    /** Gets or sets user role */
+    role?: UserRole;
+    /** Gets or sets full name */
+    fullName?: string | undefined;
 }
 
 export class ClientException extends Error {
