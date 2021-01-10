@@ -17,7 +17,7 @@ namespace Water.Data
 
 		public DbSet<User> Users { get; set; }
 
-		public DbSet<Company> Companies { get; set; }
+		//public DbSet<Company> Companies { get; set; }
 
 		public DbSet<Game> Games { get; set; }
 

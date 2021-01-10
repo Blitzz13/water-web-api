@@ -16,9 +16,9 @@ namespace Water.Data.Models
 
 		public float Rating { get; set; }
 
-		[Required]
-		[ForeignKey(nameof(Company))]
-		public string CompanyId { get; set; }
+		//[Required]
+		//[ForeignKey(nameof(Company))]
+		//public string CompanyId { get; set; }
 
 		[Required]
 		public Company Company { get; set; }
