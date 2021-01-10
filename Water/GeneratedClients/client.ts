@@ -18,6 +18,7 @@ export interface ICompaniesClient {
     /**
      * Registers a user
      * @param model UserRegister user model
+     * @param authorization (optional) This is a test header
      * @return Ok response
      */
     register(model: User, authorization?: string | undefined): Promise<string>;
