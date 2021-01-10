@@ -2,7 +2,7 @@
 
 namespace Water.Services
 {
-	public class AuthenticateRequest
+	public class UserAuthenticateRequest
 	{
 		[Required]
 		public string Username { get; set; }

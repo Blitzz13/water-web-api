@@ -4,6 +4,5 @@
 	{
 		Administrator,
 		User,
-		Company,
 	}
 }

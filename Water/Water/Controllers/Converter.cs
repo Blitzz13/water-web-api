@@ -11,10 +11,10 @@ namespace Water.Controllers
 		{
 			return new Services.User
 			{
-				Email = value.Email,
-				FullName = value.FullName,
 				Username = value.Username,
 				Password = value.Password,
+				Email = value.Email,
+				FullName = value.FullName,
 				Role = ConvertUserRoleToService(value.Role)
 			};
 		}
@@ -30,13 +30,13 @@ namespace Water.Controllers
 				case Entities.UserRole.Company:
 					return Services.UserRole.Company;
 				default:
-					throw new Exception($"User role {value} is not supported in the current context");
+					throw new Exception($"User role '{value}' is not supported in the current context");
 			}
 		}
 
-		public static Services.AuthenticateRequest ConvertAuthenticateRequestToService(Entities.AuthenticateRequest value)
+		public static Services.UserAuthenticateRequest ConvertAuthenticateRequestToService(Entities.AuthenticateRequest value)
 		{
-			return new Services.AuthenticateRequest
+			return new Services.UserAuthenticateRequest
 			{
 				Username = value.Username,
 				Password = value.Password,
@@ -49,9 +49,9 @@ namespace Water.Controllers
 		{
 			return new Entities.AuthenticateResponse
 			{
-				Username = value.Username,
-				FullName = value.FullName,
 				Id = value.Id,
+				Username = value.Username,
+				UserRole = ConvertUserRoleToEntity(value.Role),
 				TokenProvider = ConvertTokenProviderToEntity(value.TokenProvider),
 			};
 		}
@@ -62,6 +62,33 @@ namespace Water.Controllers
 			{
 				Token = value.Token,
 				ExpiresInSeconds = value.ExpiresInSeconds,
+			};
+		}
+
+		public static Entities.UserRole ConvertUserRoleToEntity(Services.UserRole value)
+		{
+			switch (value)
+			{
+				case Services.UserRole.Administrator:
+					return Entities.UserRole.Administrator;
+				case Services.UserRole.User:
+					return Entities.UserRole.User;
+				case Services.UserRole.Company:
+					return Entities.UserRole.Company;
+				default:
+					throw new Exception($"User role '{value}' is not supported in the current context");
+			}
+		}
+
+		public static Entities.User ConvertUserToEntity(Services.User value)
+		{
+			return new Entities.User
+			{
+				Username = value.Username,
+				Password = value.Password,
+				Email = value.Email,
+				FullName = value.FullName,
+				Role = ConvertUserRoleToEntity(value.Role),
 			};
 		}
 		#endregion

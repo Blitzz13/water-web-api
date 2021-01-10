@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
 using DATA = Water.Data;
 
@@ -14,8 +10,6 @@ namespace Water.Services.Impl
 	public class UserService : IUserService
 	{
 		private readonly DATA.WaterDbConext _context;
-		private const long _tokenExpirationInMinutes = 60;
-		private const long _tokenExpirationTimeInSecond = _tokenExpirationInMinutes * 60;
 		private readonly AppSettings _appSettings;
 
 		public UserService(IOptions<AppSettings> appSettings)
@@ -25,9 +19,9 @@ namespace Water.Services.Impl
 
 		}
 
-		public AuthenticateResponse Authenticate(AuthenticateRequest model)
+		public AuthenticateResponse Authenticate(UserAuthenticateRequest model)
 		{
-			var user = GetByUsername(model.Username);
+			User user = GetByUsername(model.Username);
 			
 			if (user == null)
 			{
@@ -37,7 +31,7 @@ namespace Water.Services.Impl
 			byte[] hashBytes, hash;
 			Helpers.Password.UnhashPassword(model.Password, user, out hashBytes, out hash);
 			Helpers.Password.ValidatePassword(hashBytes, hash);
-			string token = GenerateJwtToken(user);
+			TokenProvider tokenProvider = Helpers.Token.GenerateJwtToken(user.Id, _appSettings);
 
 			var result = new AuthenticateResponse
 			{
@@ -45,11 +39,7 @@ namespace Water.Services.Impl
 				Username = user.Username,
 				FullName = user.FullName,
 				Role = user.Role,
-				TokenProvider = new TokenProvider
-				{
-					ExpiresInSeconds = _tokenExpirationTimeInSecond,
-					Token = token,
-				}
+				TokenProvider = tokenProvider,
 			};
 
 			return result;
@@ -109,7 +99,7 @@ namespace Water.Services.Impl
 		public User GetById(string id)
 		{
 			DATA.Models.User user = _context.Users.FirstOrDefault(u => u.Id == id);
-			throw new NotImplementedException();
+			return Conversions.Converter.ConvertUserToService(user);
 		}
 
 		public User GetByUsername(string username)
@@ -117,25 +107,6 @@ namespace Water.Services.Impl
 			DATA.Models.User dataUser = _context.Users.SingleOrDefault(x => x.Username == username);
 
 			return Conversions.Converter.ConvertUserToService(dataUser);
-		}
-
-		// helper methods
-
-		private string GenerateJwtToken(User user)
-		{
-			// generate token that is valid for 7 days
-			var tokenHandler = new JwtSecurityTokenHandler();
-			var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-			
-			var tokenDescriptor = new SecurityTokenDescriptor
-			{
-				Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-				Expires = DateTime.UtcNow.AddMinutes(_tokenExpirationInMinutes),
-				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-			};
-			
-			SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-			return tokenHandler.WriteToken(token);
 		}
 	}
 }

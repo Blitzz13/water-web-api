@@ -12,13 +12,22 @@
 		}
 	],
 	"paths": {
-		"/Users/Authenticate": {
+		"/Companies/Authenticate": {
 			"post": {
 				"tags": [
-					"Users"
+					"Companies"
 				],
 				"summary": "Authenticates the given login request",
-				"operationId": "Users_Authenticate",
+				"operationId": "Companies_Authenticate",
+				"parameters": [
+					{
+						"type": "string",
+						"name": "authorization",
+						"in": "header",
+						"description": "This is a test header",
+						"default": "Bearer "
+					}
+				],
 				"requestBody": {
 					"x-name": "model",
 					"description": "AuthenticateRequestAuthentication request model",
@@ -46,13 +55,22 @@
 				}
 			}
 		},
-		"/Users/Register": {
+		"/Companies/Register": {
 			"post": {
 				"tags": [
-					"Users"
+					"Companies"
 				],
 				"summary": "Registers a user",
-				"operationId": "Users_Register",
+				"operationId": "Companies_Register",
+				"parameters": [
+					{
+						"type": "string",
+						"name": "authorization",
+						"in": "header",
+						"description": "This is a test header",
+						"default": "Bearer "
+					}
+				],
 				"requestBody": {
 					"x-name": "model",
 					"description": "UserRegister user model",
@@ -79,6 +97,163 @@
 					}
 				}
 			}
+		},
+		"/Users/Authenticate": {
+			"post": {
+				"tags": [
+					"Users"
+				],
+				"summary": "Authenticates the given login request",
+				"operationId": "Users_Authenticate",
+				"parameters": [
+					{
+						"type": "string",
+						"name": "authorization",
+						"in": "header",
+						"description": "This is a test header",
+						"default": "Bearer "
+					}
+				],
+				"requestBody": {
+					"x-name": "model",
+					"description": "AuthenticateRequestAuthentication request model",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AuthenticateRequest"
+							}
+						}
+					},
+					"required": true,
+					"x-position": 1
+				},
+				"responses": {
+					"200": {
+						"description": "Authentication response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthenticateResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Users/User/{id}": {
+			"get": {
+				"tags": [
+					"Users"
+				],
+				"summary": "Gets user by given id",
+				"operationId": "Users_GetUserById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "String User id ",
+						"schema": {
+							"type": "string",
+							"nullable": true
+						},
+						"x-position": 1
+					},
+					{
+						"type": "string",
+						"name": "authorization",
+						"in": "header",
+						"description": "This is a test header",
+						"default": "Bearer "
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User model",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserItem"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Users/Test": {
+			"get": {
+				"tags": [
+					"Users"
+				],
+				"summary": "Authenticates the given login request",
+				"operationId": "Users_Test",
+				"parameters": [
+					{
+						"type": "string",
+						"name": "authorization",
+						"in": "header",
+						"description": "This is a test header",
+						"default": "Bearer "
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Authentication response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Users/Register": {
+			"post": {
+				"tags": [
+					"Users"
+				],
+				"summary": "Registers a user",
+				"operationId": "Users_Register",
+				"parameters": [
+					{
+						"type": "string",
+						"name": "authorization",
+						"in": "header",
+						"description": "This is a test header",
+						"default": "Bearer "
+					}
+				],
+				"requestBody": {
+					"x-name": "model",
+					"description": "UserRegister user model",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					},
+					"required": true,
+					"x-position": 1
+				},
+				"responses": {
+					"200": {
+						"description": "Ok response with message",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -93,15 +268,18 @@
 						"description": "Gets or sets id",
 						"nullable": true
 					},
-					"fullName": {
-						"type": "string",
-						"description": "Gets or sets full name",
-						"nullable": true
-					},
 					"username": {
 						"type": "string",
 						"description": "Gets or sets username",
 						"nullable": true
+					},
+					"userRole": {
+						"description": "Gets or sets user role",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/UserRole"
+							}
+						]
 					},
 					"tokenProvider": {
 						"description": "Gets or sets Token",
@@ -113,6 +291,20 @@
 						]
 					}
 				}
+			},
+			"UserRole": {
+				"type": "string",
+				"description": "Representes enumeration user roles",
+				"x-enumNames": [
+					"Administrator",
+					"User",
+					"Company"
+				],
+				"enum": [
+					"Administrator",
+					"User",
+					"Company"
+				]
 			},
 			"TokenProvider": {
 				"type": "object",
@@ -153,11 +345,6 @@
 				"description": "Representes user",
 				"additionalProperties": false,
 				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Gets or sets user id",
-						"nullable": true
-					},
 					"username": {
 						"type": "string",
 						"description": "Gets or sets username",
@@ -188,19 +375,49 @@
 					}
 				}
 			},
-			"UserRole": {
-				"type": "string",
-				"description": "Representes enumeration user roles",
-				"x-enumNames": [
-					"Administrator",
-					"User",
-					"Company"
-				],
-				"enum": [
-					"Administrator",
-					"User",
-					"Company"
-				]
+			"UserItem": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets user id",
+						"nullable": true
+					},
+					"username": {
+						"type": "string",
+						"description": "Gets or sets username",
+						"nullable": true
+					},
+					"email": {
+						"type": "string",
+						"description": "Gets or sets email",
+						"nullable": true
+					},
+					"role": {
+						"description": "Gets or sets user role",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/UserRole"
+							}
+						]
+					},
+					"fullName": {
+						"type": "string",
+						"description": "Gets or sets full name",
+						"nullable": true
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"bearer": {
+				"type": "http",
+				"description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+				"name": "Authorization",
+				"in": "header",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
 			}
 		}
 	}

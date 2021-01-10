@@ -11,10 +11,18 @@ namespace Water.Services.Impl.Conversions
 			{
 				Id = value.Id,
 				Email = value.Email,
-				FullName = value.Email,
+				FullName = value.FullName,
 				Password = value.Password,
 				Username = value.Username,
 				Role = ConvertUserRoleToService(value.Role),
+			};
+		}
+		public static Company ConvertCompanyToService(DATA_MODELS.Company value)
+		{
+			return new Company
+			{
+				Email = value.Email,
+				Name = value.Name,
 			};
 		}
 
@@ -26,8 +34,6 @@ namespace Water.Services.Impl.Conversions
 					return UserRole.Administrator;
 				case DATA_MODELS.UserRole.User:
 					return UserRole.User;
-				case DATA_MODELS.UserRole.Company:
-					return UserRole.Company;
 				default:
 					throw new System.Exception($"User role '{value}' is not supported in the current context");
 			}
@@ -40,10 +46,20 @@ namespace Water.Services.Impl.Conversions
 			return new DATA_MODELS.User
 			{
 				Email = value.Email,
-				FullName = value.Email,
+				FullName = value.FullName,
 				Password = value.Password,
 				Username = value.Username,
 				Role = ConvertUserRoleToData(value.Role)
+			};
+		}
+
+		public static DATA_MODELS.Company ConvertCompanyToData(Company value)
+		{
+			return new DATA_MODELS.Company
+			{
+				Email = value.Email,
+				Name = value.Name,
+				Password = value.Password,
 			};
 		}
 
@@ -55,8 +71,6 @@ namespace Water.Services.Impl.Conversions
 					return DATA_MODELS.UserRole.Administrator;
 				case UserRole.User:
 					return DATA_MODELS.UserRole.User;
-				case UserRole.Company:
-					return DATA_MODELS.UserRole.Company;
 				default:
 					throw new System.Exception($"User role '{value}' is not supported in the current context");
 			}

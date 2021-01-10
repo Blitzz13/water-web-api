@@ -8,11 +8,6 @@ namespace Water.Entities
 	public class User
 	{
 		/// <summary>
-		/// Gets or sets user id
-		/// </summary>
-		public string Id { get; set; }
-
-		/// <summary>
 		/// Gets or sets username
 		/// </summary>
 		public string Username { get; set; }

@@ -20,8 +20,8 @@ namespace Water.Data.Models
 		[ForeignKey(nameof(Company))]
 		public string CompanyId { get; set; }
 
-		[Required]
-		public Company Company { get; set; }
+		//[Required]
+		//public Company Company { get; set; }
 
 		public UserGame UserGame { get; set; }
 
