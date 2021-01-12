@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Water.Data.Models
@@ -6,7 +7,11 @@ namespace Water.Data.Models
 	public class Game
 	{
 		[Key]
-		public string Id { get; set; }
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+		public int Id { get; set; }
+		
+		[Required]
+		public string Name { get; set; }
 
 		[Required]
 		public string Description { get; set; }
@@ -23,18 +28,25 @@ namespace Water.Data.Models
 		//[Required]
 		//public Company Company { get; set; }
 
-		public UserGame UserGame { get; set; }
-
 		[Required]
-		public Review[] Reviews { get; set; }
+		public string CompanyName { get; set; }
+
+		public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+		public ICollection<GameImage> Images { get; set; } = new List<GameImage>();
+
+		public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();
 
 		[Required]
 		public GameState State { get; set; }
 
 		[Required]
-		public Image[] Images { get; set; }
+		public string CoverImage { get; set; }
 
 		[Required]
-		public Genre Genres { get; set; }
+		public Genre Genre { get; set; }
+
+		[Required]
+		public bool IsFeatured { get; set; }
 	}
 }

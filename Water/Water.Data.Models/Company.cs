@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Water.Data.Models
 {
@@ -6,6 +8,7 @@ namespace Water.Data.Models
 	{
 		[Key]
 		[Required]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public string Id { get; set; }
 
 		[Required]
@@ -18,6 +21,6 @@ namespace Water.Data.Models
 		[Required]
 		public string Password { get; set; }
 
-		public Game[] CreatedGames { get; set; }
+		public ICollection<Game> CreatedGames { get; set; } = new List<Game>();
 	}
 }

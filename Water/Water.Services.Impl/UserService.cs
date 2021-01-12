@@ -16,7 +16,6 @@ namespace Water.Services.Impl
 		{
 			_appSettings = appSettings.Value;
 			_context = new DATA.WaterDbConext();
-
 		}
 
 		public AuthenticateResponse Authenticate(UserAuthenticateRequest model)
@@ -107,6 +106,24 @@ namespace Water.Services.Impl
 			DATA.Models.User dataUser = _context.Users.SingleOrDefault(x => x.Username == username);
 
 			return Conversions.Converter.ConvertUserToService(dataUser);
+		}
+
+		public void BuyGame(string userId, int gameId)
+		{
+			DATA.Models.Game game = _context.Games.FirstOrDefault(g => g.Id == gameId);
+			if(game != null)
+			{
+				return;
+			}
+
+			DATA.Models.User user = _context.Users.FirstOrDefault(u => u.Id == userId);
+			user.UserGames.Add(new DATA.Models.UserGame
+			{
+				GameId = gameId,
+				UserId = userId
+			});
+
+			_context.SaveChanges();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace Water.Data.Models
+﻿namespace Water.Services
 {
 	public enum Genre
 	{
