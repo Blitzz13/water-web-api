@@ -24,6 +24,8 @@ namespace Water.Data
 
 		public DbSet<UserGame> UsersGames { get; set; }
 
+		public DbSet<GameImage> GameImages { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder builder)
 		{
 			base.OnConfiguring(builder);
@@ -39,6 +41,21 @@ namespace Water.Data
 		{
 			builder.Entity<UserGame>()
 				.HasKey(ug => new { ug.GameId, ug.UserId });
+
+			builder.Entity<UserGame>()
+				.HasOne(ug => ug.Game)
+				.WithMany(g => g.UserGames)
+				.HasForeignKey(ug => ug.GameId);
+
+			builder.Entity<UserGame>()
+				.HasOne(ug => ug.User)
+				.WithMany(g => g.UserGames)
+				.HasForeignKey(ug => ug.UserId);
+
+			builder.Entity<GameImage>()
+				.HasOne(gi => gi.Game)
+				.WithMany(g => g.Images)
+				.HasForeignKey(gi => gi.GameId);
 		}
 	}
 }

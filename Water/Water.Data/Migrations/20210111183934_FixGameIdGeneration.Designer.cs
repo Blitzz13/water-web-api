@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Water.Data;
 
 namespace Water.Data.Migrations
 {
     [DbContext(typeof(WaterDbConext))]
-    partial class WaterDbConextModelSnapshot : ModelSnapshot
+    [Migration("20210111183934_FixGameIdGeneration")]
+    partial class FixGameIdGeneration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,10 +46,6 @@ namespace Water.Data.Migrations
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -57,7 +55,12 @@ namespace Water.Data.Migrations
                     b.Property<int>("State")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Games");
                 });
@@ -65,7 +68,6 @@ namespace Water.Data.Migrations
             modelBuilder.Entity("Water.Data.Models.GameImage", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("GameId")
@@ -84,7 +86,6 @@ namespace Water.Data.Migrations
             modelBuilder.Entity("Water.Data.Models.Review", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
@@ -142,19 +143,13 @@ namespace Water.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Water.Data.Models.UserGame", b =>
+            modelBuilder.Entity("Water.Data.Models.Game", b =>
                 {
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
+                    b.HasOne("Water.Data.Models.User", "User")
+                        .WithMany("Games")
+                        .HasForeignKey("UserId");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("GameId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsersGames");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Water.Data.Models.GameImage", b =>
@@ -183,39 +178,18 @@ namespace Water.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Water.Data.Models.UserGame", b =>
-                {
-                    b.HasOne("Water.Data.Models.Game", "Game")
-                        .WithMany("UserGames")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Water.Data.Models.User", "User")
-                        .WithMany("UserGames")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Water.Data.Models.Game", b =>
                 {
                     b.Navigation("Images");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("UserGames");
                 });
 
             modelBuilder.Entity("Water.Data.Models.User", b =>
                 {
-                    b.Navigation("Reviews");
+                    b.Navigation("Games");
 
-                    b.Navigation("UserGames");
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

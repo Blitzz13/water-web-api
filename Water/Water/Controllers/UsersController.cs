@@ -30,7 +30,7 @@ namespace Water.Controllers
 		/// <param name="model"><see cref="AuthenticateRequest"/>Authentication request model</param>
 		/// <returns> Authenticated user data </returns>
 		/// <response code="200"><see cref="AuthenticateResponse" />Authentication response</response>
-		/// <response code="400"><see cref="BadRequestObjectResult"/>Bad request</response>
+		/// <response code="400"><see cref="Error"/>Bad request</response>
 		[HttpPost("Authenticate")]
 		public ActionResult<Entities.AuthenticateResponse> Authenticate([FromBody]AuthenticateRequest model)
 		{
@@ -43,7 +43,7 @@ namespace Water.Controllers
 			}
 
 			return Ok(response);
-			}
+		}
 
 		/// <summary>
 		/// Gets user by given id
@@ -51,7 +51,7 @@ namespace Water.Controllers
 		/// <param name="id"><see cref="string"/> User id </param>
 		/// <returns> User model </returns>
 		/// <response code="200"><see cref="UserItem" />User model</response>
-		/// <response code="400"><see cref="BadRequestObjectResult"/>Bad request</response>
+		/// <response code="400"><see cref="Error"/>Bad request</response>
 		[HttpGet("User/{id?}")]
 		public ActionResult<UserItem> GetUserById([FromRoute]string id)
 		{
@@ -75,10 +75,10 @@ namespace Water.Controllers
 		/// Authenticates the given login request
 		/// </summary>
 		/// <returns> Authenticated user data </returns>
-		/// <response code="200"><see cref="Entities.AuthenticateResponse" />Authentication response</response>
-		/// <response code="400"><see cref="BadRequestObjectResult"/>Bad request</response>
+		/// <response code="200"><see cref="AuthenticateResponse" />Authentication response</response>
+		/// <response code="400"><see cref="Error"/>Bad request</response>
 		[HttpGet("Test")]
-		[Authorize]
+		[Authenticate]
 		public ActionResult<string> Test()
 		{
 			return "It worked";
@@ -92,12 +92,38 @@ namespace Water.Controllers
 		/// <response code="200"><see cref="OkResult" />Ok response with message</response>
 		/// <response code="400"><see cref="BadRequestObjectResult"/>Bad request with the exception</response>
 		[HttpPost("Register")]
-		public ActionResult<string> Register([FromBody]Entities.User model)
+		public IActionResult Register([FromBody]Entities.User model)
 		{
 			try
 			{
 				_userService.Register(Converter.ConvertUserToService(model));
-				return Ok("Register is succesful");
+				return Ok();
+			}
+			catch (Exception e)
+			{
+				return BadRequest(new Error
+				{
+					Message = e.Message,
+					StackTrace = e.StackTrace.Trim(),
+				});
+			}
+		}
+
+		/// <summary>
+		/// Adds a game to the user games enumeration
+		/// </summary>
+		/// <param name="request" in="body"><see cref="BuyGameRequest"/>Register user model</param>
+		/// <returns> Register message </returns>
+		/// <response code="200"><see cref="OkResult" />Ok response</response>
+		/// <response code="400"><see cref="Error"/>Bad request with the exception</response>
+		[HttpPost("Buy/Game")]
+		[Authenticate]
+		public ActionResult<string> BuyGame([FromBody]BuyGameRequest request)
+		{
+			try
+			{
+				_userService.BuyGame(request.userId, int.Parse(request.gameId));
+				return Ok();
 			}
 			catch (Exception e)
 			{

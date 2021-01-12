@@ -6,15 +6,15 @@ using System;
 namespace Water.Services.Impl.Helpers
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-	public class AuthorizeAttribute : Attribute, IAuthorizationFilter
+	public class AuthenticateAttribute : Attribute, IAuthorizationFilter
 	{
 		public void OnAuthorization(AuthorizationFilterContext context)
 		{
 			var user = (User)context.HttpContext.Items["User"];	
-			
-			if (user.Role != UserRole.Administrator)
+			if (user == null)
 			{
-				context.Result = new JsonResult(new { message = "You cannot perform action." }) { StatusCode = StatusCodes.Status403Forbidden };
+				// not logged in
+				context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
 			}
 		}
 	}

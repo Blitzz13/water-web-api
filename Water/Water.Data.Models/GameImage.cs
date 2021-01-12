@@ -3,22 +3,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Water.Data.Models
 {
-	public class Review
+	public class GameImage
 	{
-		[Required]
+		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public string Id { get; set; }
 
-		[Required]
-		public string Content { get; set; }
+		public string Url { get; set; }
 
 		[Required]
-		[ForeignKey(nameof(User))]
-		public string UserId { get; set; }
+		public int GameId { get; set; }
 
 		[Required]
-		public User User { get; set; }
-
-		public int Upvotes { get; set; }
+		public Game Game { get; set; }
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Water.Data.Models
@@ -19,13 +20,13 @@ namespace Water.Data.Models
 		[EmailAddress]
 		public string Email { get; set; }
 
-		public UserGame[] UserGame { get; set; }
+		public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();
 
 		public UserRole Role { get; set; }
 
-		public Image ProfilePicture { get; set; }
-		
-		public Review[] Reviews { get; set; }
+		public string ProfilePicture { get; set; }
+
+		public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
 		public string FullName { get; set; }
 	}

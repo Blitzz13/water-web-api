@@ -10,7 +10,7 @@ using Water.Data;
 namespace Water.Data.Migrations
 {
     [DbContext(typeof(WaterDbConext))]
-    [Migration("20201203080332_Initial")]
+    [Migration("20210111182903_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,45 +19,32 @@ namespace Water.Data.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0");
-
-            modelBuilder.Entity("Water.Data.Models.Company", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Companies");
-                });
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("Water.Data.Models.Game", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("CompanyId")
+                    b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Genres")
+                    b.Property<int>("Genre")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -68,29 +55,32 @@ namespace Water.Data.Migrations
                     b.Property<int>("State")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("Water.Data.Models.Image", b =>
+            modelBuilder.Entity("Water.Data.Models.GameImage", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("GameId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
 
-                    b.Property<byte[]>("data")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Image");
+                    b.ToTable("GameImages");
                 });
 
             modelBuilder.Entity("Water.Data.Models.Review", b =>
@@ -102,8 +92,8 @@ namespace Water.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GameId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("GameId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Upvotes")
                         .HasColumnType("int");
@@ -124,6 +114,7 @@ namespace Water.Data.Migrations
             modelBuilder.Entity("Water.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
@@ -137,8 +128,8 @@ namespace Water.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProfilePictureId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -149,45 +140,27 @@ namespace Water.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfilePictureId");
-
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Water.Data.Models.UserGame", b =>
-                {
-                    b.Property<string>("GameId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("GameId", "UserId");
-
-                    b.HasIndex("GameId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsersGames");
                 });
 
             modelBuilder.Entity("Water.Data.Models.Game", b =>
                 {
-                    b.HasOne("Water.Data.Models.Company", "Company")
-                        .WithMany("CreatedGames")
-                        .HasForeignKey("CompanyId")
+                    b.HasOne("Water.Data.Models.User", "User")
+                        .WithMany("Games")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Water.Data.Models.GameImage", b =>
+                {
+                    b.HasOne("Water.Data.Models.Game", "Game")
+                        .WithMany("Images")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("Water.Data.Models.Image", b =>
-                {
-                    b.HasOne("Water.Data.Models.Game", null)
-                        .WithMany("Images")
-                        .HasForeignKey("GameId");
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("Water.Data.Models.Review", b =>
@@ -205,53 +178,18 @@ namespace Water.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Water.Data.Models.User", b =>
-                {
-                    b.HasOne("Water.Data.Models.Image", "ProfilePicture")
-                        .WithMany()
-                        .HasForeignKey("ProfilePictureId");
-
-                    b.Navigation("ProfilePicture");
-                });
-
-            modelBuilder.Entity("Water.Data.Models.UserGame", b =>
-                {
-                    b.HasOne("Water.Data.Models.Game", "Game")
-                        .WithOne("UserGame")
-                        .HasForeignKey("Water.Data.Models.UserGame", "GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Water.Data.Models.User", "User")
-                        .WithMany("UserGame")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Water.Data.Models.Company", b =>
-                {
-                    b.Navigation("CreatedGames");
-                });
-
             modelBuilder.Entity("Water.Data.Models.Game", b =>
                 {
                     b.Navigation("Images");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("UserGame");
                 });
 
             modelBuilder.Entity("Water.Data.Models.User", b =>
                 {
-                    b.Navigation("Reviews");
+                    b.Navigation("Games");
 
-                    b.Navigation("UserGame");
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
