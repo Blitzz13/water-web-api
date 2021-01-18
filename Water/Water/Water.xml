@@ -17,30 +17,47 @@
         </member>
         <member name="M:Water.Controllers.GamesController.AddGame(Water.Entities.AddGameRequest)">
             <summary>
-            Authenticates the given login request
+            Creates a game
             </summary>
-            <param name="model"><see cref="T:Water.Entities.AuthenticateRequest"/>Authentication request model</param>
-            <returns> Authenticated user data </returns>
-            <response code="200"><see cref="T:Water.Entities.Game" />Game</response>
-            <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request</response>
+            <param name="model"><see cref="T:Water.Entities.AddGameRequest"/> Add game request </param>
+            <returns> The game id </returns>
+            <response code="200"><see cref="T:Water.Entities.Game" /> Game object </response>
+            <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
         </member>
-        <member name="M:Water.Controllers.GamesController.GetUserById(System.Int32)">
+        <member name="M:Water.Controllers.GamesController.RemoveGame(System.String)">
             <summary>
-            Gets user by given id
+            Removes a game from the database
+            </summary>
+            <param name="id"><see cref="T:System.String"/>User Id</param>
+            <response code="200"><see cref="T:Water.Entities.Game" /> Game object </response>
+            <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
+        </member>
+        <member name="M:Water.Controllers.GamesController.GetGameById(System.String)">
+            <summary>
+            Gets game by given id
             </summary>
             <param name="id"><see cref="T:System.String"/> Game id </param>
-            <returns> User model </returns>
-            <response code="200"><see cref="T:Water.Entities.Game" />User model</response>
-            <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request</response>
+            <returns> Game </returns>
+            <response code="200"><see cref="T:Water.Entities.Game" /> Game object </response>
+            <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
         </member>
         <member name="M:Water.Controllers.GamesController.ListUserGames(System.String)">
             <summary>
-            Returns the purchased games for the given user
+            Returns the purchased games for the given user id
             </summary>
             <param name="id"><see cref="T:System.String"/> User id </param>
-            <returns> User model </returns>
-            <response code="200"><see cref="T:Water.Entities.Game" />Array of games</response>
-            <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request</response>
+            <returns> Enumeration of games </returns>
+            <response code="200"><see cref="T:Water.Entities.GameItem" /> Enumeration of game items </response>
+            <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
+        </member>
+        <member name="M:Water.Controllers.GamesController.ListGameItems(Water.Entities.GameFilter)">
+            <summary>
+            Returns the purchased games for the given user id
+            </summary>
+            <param name="filter"><see cref="T:Water.Entities.GameFilter"/> Game filter </param>
+            <returns> Enumeration of game game items </returns>
+            <response code="200"><see cref="T:Water.Entities.GameItem" /> Enumeration of game items </response>
+            <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
         </member>
         <member name="T:Water.Controllers.UsersController">
             <summary>
@@ -60,7 +77,7 @@
             <param name="model"><see cref="T:Water.Entities.AuthenticateRequest"/>Authentication request model</param>
             <returns> Authenticated user data </returns>
             <response code="200"><see cref="T:Water.Entities.AuthenticateResponse" />Authentication response</response>
-            <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request</response>
+            <response code="400"><see cref="T:Water.Entities.Error"/>Bad request</response>
         </member>
         <member name="M:Water.Controllers.UsersController.GetUserById(System.String)">
             <summary>
@@ -69,7 +86,7 @@
             <param name="id"><see cref="T:System.String"/> User id </param>
             <returns> User model </returns>
             <response code="200"><see cref="T:Water.Entities.UserItem" />User model</response>
-            <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request</response>
+            <response code="400"><see cref="T:Water.Entities.Error"/>Bad request</response>
         </member>
         <member name="M:Water.Controllers.UsersController.Test">
             <summary>
@@ -77,7 +94,7 @@
             </summary>
             <returns> Authenticated user data </returns>
             <response code="200"><see cref="T:Water.Entities.AuthenticateResponse" />Authentication response</response>
-            <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request</response>
+            <response code="400"><see cref="T:Water.Entities.Error"/>Bad request</response>
         </member>
         <member name="M:Water.Controllers.UsersController.Register(Water.Entities.User)">
             <summary>
@@ -87,6 +104,69 @@
             <returns> Register message </returns>
             <response code="200"><see cref="T:Microsoft.AspNetCore.Mvc.OkResult" />Ok response with message</response>
             <response code="400"><see cref="T:Microsoft.AspNetCore.Mvc.BadRequestObjectResult"/>Bad request with the exception</response>
+        </member>
+        <member name="M:Water.Controllers.UsersController.BuyGame(Water.Entities.BuyGameRequest)">
+            <summary>
+            Adds a game to the user games enumeration
+            </summary>
+            <param name="request" in="body"><see cref="T:Water.Entities.BuyGameRequest"/>Register user model</param>
+            <returns> Register message </returns>
+            <response code="200"><see cref="T:System.Void" />Ok response</response>
+        </member>
+        <member name="T:Water.Entities.AddGameRequest">
+            <summary>
+            Represents add game request
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.Name">
+            <summary>
+            Gets or sets name
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.Description">
+            <summary>
+            Gets or sets description
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.Price">
+            <summary>
+            Gets or sets price
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.Rating">
+            <summary>
+            Gets or sets rating
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.State">
+            <summary>
+            Gets or sets state
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.CoverImage">
+            <summary>
+            Gets or sets cover image
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.ImageUrls">
+            <summary>
+            Gets or sets image urls
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.Genre">
+            <summary>
+            Gets or sets genre
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.IsFeatured">
+            <summary>
+            Gets or sets is featured
+            </summary>
+        </member>
+        <member name="P:Water.Entities.AddGameRequest.CompanyName">
+            <summary>
+            Gets or sets compamy name
+            </summary>
         </member>
         <member name="T:Water.Entities.AuthenticateRequest">
             <summary>
@@ -126,6 +206,236 @@
         <member name="P:Water.Entities.AuthenticateResponse.TokenProvider">
             <summary>
             Gets or sets Token
+            </summary>
+        </member>
+        <member name="T:Water.Entities.BuyGameRequest">
+            <summary>
+            Represents buy game request
+            </summary>
+        </member>
+        <member name="P:Water.Entities.BuyGameRequest.userId">
+            <summary>
+            Gets or sets user id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.BuyGameRequest.gameId">
+            <summary>
+            Gets or sets game id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Id">
+            <summary>
+            Gets or sets id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Name">
+            <summary>
+            Gets or sets name
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Description">
+            <summary>
+            Gets or sets description
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Price">
+            <summary>
+            Gets or sets price
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Rating">
+            <summary>
+            Gets or sets rating
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Reviews">
+            <summary>
+            Gets or sets reviews
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.State">
+            <summary>
+            Gets or sets state
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.CoverImage">
+            <summary>
+            Gets or sets cover image
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.ImageUrls">
+            <summary>
+            Gets or sets image urls
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.Genre">
+            <summary>
+            Gets or sets genre
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.IsFeatured">
+            <summary>
+            Gets or sets is featured
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Game.CompanyName">
+            <summary>
+            Gets or sets company name
+            </summary>
+        </member>
+        <member name="T:Water.Entities.GameFilter">
+            <summary>
+            Represents game filter
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameFilter.Id">
+            <summary>
+            Gets or sets id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameFilter.Name">
+            <summary>
+            Gets or sets name
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameFilter.isFeatured">
+            <summary>
+            Gets or sets is featured
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameFilter.Genres">
+            <summary>
+            Gets or sets genres
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameFilter.States">
+            <summary>
+            Gets or sets states
+            </summary>
+        </member>
+        <member name="T:Water.Entities.GameItem">
+            <summary>
+            Represents game item
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameItem.Id">
+            <summary>
+            Gets or sets id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameItem.Price">
+            <summary>
+            Gets or sets price
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameItem.Rating">
+            <summary>
+            Gets or sets rating
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameItem.CoverImage">
+            <summary>
+            Gets or sets cover image
+            </summary>
+        </member>
+        <member name="P:Water.Entities.GameItem.IsFeatured">
+            <summary>
+            Gets or sets is featured
+            </summary>
+        </member>
+        <member name="T:Water.Entities.GameState">
+            <summary>
+            Representes enumeration of game states
+            </summary>
+        </member>
+        <member name="F:Water.Entities.GameState.Released">
+            <summary>
+            Released
+            </summary>
+        </member>
+        <member name="F:Water.Entities.GameState.EarlyAccess">
+            <summary>
+            Early access
+            </summary>
+        </member>
+        <member name="F:Water.Entities.GameState.Preorder">
+            <summary>
+            Preorder
+            </summary>
+        </member>
+        <member name="T:Water.Entities.Genre">
+            <summary>
+            Representes enumeration of game genres
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Cooperative">
+            <summary>
+            Cooperative
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Action">
+            <summary>
+            Action
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.ActionAdventure">
+            <summary>
+            Action adventure
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Adventure">
+            <summary>
+            Adventure
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Rpg">
+            <summary>
+            RPG
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Simulation">
+            <summary>
+            Simulation
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Strategy">
+            <summary>
+            Strategy
+            </summary>
+        </member>
+        <member name="F:Water.Entities.Genre.Sport">
+            <summary>
+            Sport
+            </summary>
+        </member>
+        <member name="T:Water.Entities.Review">
+            <summary>
+            Represents review
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Review.Id">
+            <summary>
+            Gets or sets id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Review.Content">
+            <summary>
+            Gets or sets content
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Review.UserId">
+            <summary>
+            Gets or sets user id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Review.Username">
+            <summary>
+            Gets or sets username
+            </summary>
+        </member>
+        <member name="P:Water.Entities.Review.Upvotes">
+            <summary>
+            Gets or sets upvotes
             </summary>
         </member>
         <member name="T:Water.Entities.TokenProvider">
@@ -171,6 +481,11 @@
         <member name="P:Water.Entities.User.Password">
             <summary>
             Gets or sets password
+            </summary>
+        </member>
+        <member name="T:Water.Entities.UserItem">
+            <summary>
+            Represents authentication request
             </summary>
         </member>
         <member name="P:Water.Entities.UserItem.Id">

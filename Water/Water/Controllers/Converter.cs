@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Water.Controllers
 {
@@ -23,6 +24,7 @@ namespace Water.Controllers
 		{
 			return new Services.Game
 			{
+				Name = value.Name,
 				CompanyName = value.CompanyName,
 				CoverImage = value.CoverImage,
 				Description = value.Description,
@@ -83,6 +85,18 @@ namespace Water.Controllers
 			};
 		}
 
+		public static Services.GameFilter ConvertGameFilterToService(Entities.GameFilter value)
+		{
+			return new Services.GameFilter
+			{
+				Id = value.Id,
+				Name = value.Name,
+				isFeatured = value.isFeatured,
+				Genres = value.Genres.Select(ConvertGenreToService).ToArray(),
+				States = value.States.Select(ConvertGameStateToService).ToArray(),
+			};
+		}
+
 		public static Services.UserRole ConvertUserRoleToService(Entities.UserRole value)
 		{
 			switch (value)
@@ -137,6 +151,7 @@ namespace Water.Controllers
 			return new Entities.Game
 			{
 				Id = value.Id,
+				Name = value.Name,
 				CompanyName = value.CompanyName,
 				CoverImage = value.CoverImage,
 				Description = value.Description,
@@ -145,6 +160,18 @@ namespace Water.Controllers
 				ImageUrls = value.ImageUrls,
 				IsFeatured = value.IsFeatured,
 				Price = value.Price,
+			};
+		}
+
+		public static Entities.GameItem ConvertGameItemToEntity(Services.GameItem value)
+		{
+			return new Entities.GameItem
+			{
+				Id = value.Id,
+				CoverImage = value.CoverImage,
+				IsFeatured = value.IsFeatured,
+				Price = value.Price,
+				Rating = value.Rating,
 			};
 		}
 

@@ -7,24 +7,40 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
-export interface ICompaniesClient {
+export interface IGamesClient {
     /**
-     * Authenticates the given login request
-     * @param model AuthenticateRequestAuthentication request model
-     * @param authorization (optional) This is a test header
-     * @return Authentication response
+     * Creates a game
+     * @param model AddGameRequest Add game request
+     * @return Game object
      */
-    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse>;
+    addGame(model: AddGameRequest): Promise<string>;
     /**
-     * Registers a user
-     * @param model UserRegister user model
-     * @param authorization (optional) This is a test header
-     * @return Ok response
+     * Removes a game from the database
+     * @param id StringUser Id
+     * @return Game object
      */
-    register(model: User, authorization?: string | undefined): Promise<string>;
+    removeGame(id: string | null): Promise<FileResponse>;
+    /**
+     * Gets game by given id
+     * @param id String Game id
+     * @return Game object
+     */
+    getGameById(id: string | null): Promise<Game>;
+    /**
+     * Returns the purchased games for the given user id
+     * @param id String User id
+     * @return Enumeration of game items
+     */
+    listUserGames(id: string | null): Promise<GameItem[]>;
+    /**
+     * Returns the purchased games for the given user id
+     * @param filter GameFilter Game filter
+     * @return Enumeration of game items
+     */
+    listGameItems(filter: GameFilter): Promise<GameItem[]>;
 }
 
-export class CompaniesClient implements ICompaniesClient {
+export class GamesClient implements IGamesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -35,13 +51,12 @@ export class CompaniesClient implements ICompaniesClient {
     }
 
     /**
-     * Authenticates the given login request
-     * @param model AuthenticateRequestAuthentication request model
-     * @param authorization (optional) This is a test header
-     * @return Authentication response
+     * Creates a game
+     * @param model AddGameRequest Add game request
+     * @return Game object
      */
-    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse> {
-        let url_ = this.baseUrl + "/Companies/Authenticate";
+    addGame(model: AddGameRequest): Promise<string> {
+        let url_ = this.baseUrl + "/Games/Add";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(model);
@@ -50,62 +65,17 @@ export class CompaniesClient implements ICompaniesClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAuthenticate(_response);
+            return this.processAddGame(_response);
         });
     }
 
-    protected processAuthenticate(response: Response): Promise<AuthenticateResponse> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <AuthenticateResponse>JSON.parse(_responseText, this.jsonParseReviver);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<AuthenticateResponse>(<any>null);
-    }
-
-    /**
-     * Registers a user
-     * @param model UserRegister user model
-     * @param authorization (optional) This is a test header
-     * @return Ok response
-     */
-    register(model: User, authorization?: string | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/Companies/Register";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(model);
-
-        let options_ = <RequestInit>{
-            body: content_,
-            method: "POST",
-            headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processRegister(_response);
-        });
-    }
-
-    protected processRegister(response: Response): Promise<string> {
+    protected processAddGame(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -121,36 +91,202 @@ export class CompaniesClient implements ICompaniesClient {
         }
         return Promise.resolve<string>(<any>null);
     }
+
+    /**
+     * Removes a game from the database
+     * @param id StringUser Id
+     * @return Game object
+     */
+    removeGame(id: string | null): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/Games/Remove/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemoveGame(_response);
+        });
+    }
+
+    protected processRemoveGame(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(<any>null);
+    }
+
+    /**
+     * Gets game by given id
+     * @param id String Game id
+     * @return Game object
+     */
+    getGameById(id: string | null): Promise<Game> {
+        let url_ = this.baseUrl + "/Games/Game/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetGameById(_response);
+        });
+    }
+
+    protected processGetGameById(response: Response): Promise<Game> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Game>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Game>(<any>null);
+    }
+
+    /**
+     * Returns the purchased games for the given user id
+     * @param id String User id
+     * @return Enumeration of game items
+     */
+    listUserGames(id: string | null): Promise<GameItem[]> {
+        let url_ = this.baseUrl + "/Games/User/Games/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processListUserGames(_response);
+        });
+    }
+
+    protected processListUserGames(response: Response): Promise<GameItem[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <GameItem[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GameItem[]>(<any>null);
+    }
+
+    /**
+     * Returns the purchased games for the given user id
+     * @param filter GameFilter Game filter
+     * @return Enumeration of game items
+     */
+    listGameItems(filter: GameFilter): Promise<GameItem[]> {
+        let url_ = this.baseUrl + "/Games/List";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(filter);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processListGameItems(_response);
+        });
+    }
+
+    protected processListGameItems(response: Response): Promise<GameItem[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <GameItem[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GameItem[]>(<any>null);
+    }
 }
 
 export interface IUsersClient {
     /**
      * Authenticates the given login request
      * @param model AuthenticateRequestAuthentication request model
-     * @param authorization (optional) This is a test header
      * @return Authentication response
      */
-    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse>;
+    authenticate(model: AuthenticateRequest): Promise<AuthenticateResponse>;
     /**
      * Gets user by given id
      * @param id String User id
-     * @param authorization (optional) This is a test header
      * @return User model
      */
-    getUserById(id: string | null, authorization?: string | undefined): Promise<UserItem>;
+    getUserById(id: string | null): Promise<UserItem>;
     /**
      * Authenticates the given login request
-     * @param authorization (optional) This is a test header
      * @return Authentication response
      */
-    test(authorization?: string | undefined): Promise<string>;
+    test(): Promise<string>;
     /**
      * Registers a user
      * @param model UserRegister user model
-     * @param authorization (optional) This is a test header
      * @return Ok response with message
      */
-    register(model: User, authorization?: string | undefined): Promise<string>;
+    register(model: User): Promise<FileResponse>;
+    /**
+     * Adds a game to the user games enumeration
+     * @param request BuyGameRequestRegister user model
+     * @return Ok response
+     */
+    buyGame(request: BuyGameRequest): Promise<void>;
 }
 
 export class UsersClient implements IUsersClient {
@@ -166,10 +302,9 @@ export class UsersClient implements IUsersClient {
     /**
      * Authenticates the given login request
      * @param model AuthenticateRequestAuthentication request model
-     * @param authorization (optional) This is a test header
      * @return Authentication response
      */
-    authenticate(model: AuthenticateRequest, authorization?: string | undefined): Promise<AuthenticateResponse> {
+    authenticate(model: AuthenticateRequest): Promise<AuthenticateResponse> {
         let url_ = this.baseUrl + "/Users/Authenticate";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -179,7 +314,6 @@ export class UsersClient implements IUsersClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
@@ -210,10 +344,9 @@ export class UsersClient implements IUsersClient {
     /**
      * Gets user by given id
      * @param id String User id
-     * @param authorization (optional) This is a test header
      * @return User model
      */
-    getUserById(id: string | null, authorization?: string | undefined): Promise<UserItem> {
+    getUserById(id: string | null): Promise<UserItem> {
         let url_ = this.baseUrl + "/Users/User/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -223,7 +356,6 @@ export class UsersClient implements IUsersClient {
         let options_ = <RequestInit>{
             method: "GET",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "application/json"
             }
         };
@@ -252,17 +384,15 @@ export class UsersClient implements IUsersClient {
 
     /**
      * Authenticates the given login request
-     * @param authorization (optional) This is a test header
      * @return Authentication response
      */
-    test(authorization?: string | undefined): Promise<string> {
+    test(): Promise<string> {
         let url_ = this.baseUrl + "/Users/Test";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
             method: "GET",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "application/json"
             }
         };
@@ -292,10 +422,9 @@ export class UsersClient implements IUsersClient {
     /**
      * Registers a user
      * @param model UserRegister user model
-     * @param authorization (optional) This is a test header
      * @return Ok response with message
      */
-    register(model: User, authorization?: string | undefined): Promise<string> {
+    register(model: User): Promise<FileResponse> {
         let url_ = this.baseUrl + "/Users/Register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -305,9 +434,8 @@ export class UsersClient implements IUsersClient {
             body: content_,
             method: "POST",
             headers: {
-                "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             }
         };
 
@@ -316,22 +444,172 @@ export class UsersClient implements IUsersClient {
         });
     }
 
-    protected processRegister(response: Response): Promise<string> {
+    protected processRegister(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(<any>null);
+    }
+
+    /**
+     * Adds a game to the user games enumeration
+     * @param request BuyGameRequestRegister user model
+     * @return Ok response
+     */
+    buyGame(request: BuyGameRequest): Promise<void> {
+        let url_ = this.baseUrl + "/Users/Buy/Game";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processBuyGame(_response);
+        });
+    }
+
+    protected processBuyGame(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <string>JSON.parse(_responseText, this.jsonParseReviver);
-            return result200;
+            return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(<any>null);
+        return Promise.resolve<void>(<any>null);
     }
+}
+
+/** Represents add game request */
+export interface AddGameRequest {
+    /** Gets or sets name */
+    name?: string | undefined;
+    /** Gets or sets description */
+    description?: string | undefined;
+    /** Gets or sets price */
+    price?: number;
+    /** Gets or sets rating */
+    rating?: number;
+    /** Gets or sets state */
+    state?: GameState;
+    /** Gets or sets cover image */
+    coverImage?: string | undefined;
+    /** Gets or sets image urls */
+    imageUrls?: string[] | undefined;
+    /** Gets or sets genre */
+    genre?: Genre;
+    /** Gets or sets is featured */
+    isFeatured?: boolean;
+    /** Gets or sets compamy name */
+    companyName?: string | undefined;
+}
+
+/** Representes enumeration of game states */
+export enum GameState {
+    Released = "Released",
+    EarlyAccess = "EarlyAccess",
+    Preorder = "Preorder",
+}
+
+/** Representes enumeration of game genres */
+export enum Genre {
+    Cooperative = "Cooperative",
+    Action = "Action",
+    ActionAdventure = "ActionAdventure",
+    Adventure = "Adventure",
+    Rpg = "Rpg",
+    Simulation = "Simulation",
+    Strategy = "Strategy",
+    Sport = "Sport",
+}
+
+export interface Game {
+    /** Gets or sets id */
+    id?: string | undefined;
+    /** Gets or sets name */
+    name?: string | undefined;
+    /** Gets or sets description */
+    description?: string | undefined;
+    /** Gets or sets price */
+    price?: number;
+    /** Gets or sets rating */
+    rating?: number;
+    /** Gets or sets reviews */
+    reviews?: Review[] | undefined;
+    /** Gets or sets state */
+    state?: GameState;
+    /** Gets or sets cover image */
+    coverImage?: string | undefined;
+    /** Gets or sets image urls */
+    imageUrls?: string[] | undefined;
+    /** Gets or sets genre */
+    genre?: Genre;
+    /** Gets or sets is featured */
+    isFeatured?: boolean;
+    /** Gets or sets company name */
+    companyName?: string | undefined;
+}
+
+/** Represents review */
+export interface Review {
+    /** Gets or sets id */
+    id?: string | undefined;
+    /** Gets or sets content */
+    content?: string | undefined;
+    /** Gets or sets user id */
+    userId?: string | undefined;
+    /** Gets or sets username */
+    username?: string | undefined;
+    /** Gets or sets upvotes */
+    upvotes?: number;
+}
+
+/** Represents game item */
+export interface GameItem {
+    /** Gets or sets id */
+    id?: string | undefined;
+    /** Gets or sets price */
+    price?: number;
+    /** Gets or sets rating */
+    rating?: number;
+    /** Gets or sets cover image */
+    coverImage?: string | undefined;
+    /** Gets or sets is featured */
+    isFeatured?: boolean;
+}
+
+/** Represents game filter */
+export interface GameFilter {
+    /** Gets or sets id */
+    id?: string | undefined;
+    /** Gets or sets name */
+    name?: string | undefined;
+    /** Gets or sets is featured */
+    isFeatured?: boolean;
+    /** Gets or sets genres */
+    genres?: Genre[] | undefined;
+    /** Gets or sets states */
+    states?: GameState[] | undefined;
 }
 
 /** Representes authentication response */
@@ -369,6 +647,20 @@ export interface AuthenticateRequest {
     password?: string | undefined;
 }
 
+/** Represents authentication request */
+export interface UserItem {
+    /** Gets or sets user id */
+    id?: string | undefined;
+    /** Gets or sets username */
+    username?: string | undefined;
+    /** Gets or sets email */
+    email?: string | undefined;
+    /** Gets or sets user role */
+    role?: UserRole;
+    /** Gets or sets full name */
+    fullName?: string | undefined;
+}
+
 /** Representes user */
 export interface User {
     /** Gets or sets username */
@@ -383,17 +675,19 @@ export interface User {
     password?: string | undefined;
 }
 
-export interface UserItem {
+/** Represents buy game request */
+export interface BuyGameRequest {
     /** Gets or sets user id */
-    id?: string | undefined;
-    /** Gets or sets username */
-    username?: string | undefined;
-    /** Gets or sets email */
-    email?: string | undefined;
-    /** Gets or sets user role */
-    role?: UserRole;
-    /** Gets or sets full name */
-    fullName?: string | undefined;
+    userId?: string | undefined;
+    /** Gets or sets game id */
+    gameId?: string | undefined;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class ClientException extends Error {

@@ -114,24 +114,18 @@ namespace Water.Controllers
 		/// </summary>
 		/// <param name="request" in="body"><see cref="BuyGameRequest"/>Register user model</param>
 		/// <returns> Register message </returns>
-		/// <response code="200"><see cref="OkResult" />Ok response</response>
-		/// <response code="400"><see cref="Error"/>Bad request with the exception</response>
+		/// <response code="200"><see cref="void" />Ok response</response>
 		[HttpPost("Buy/Game")]
 		[Authenticate]
-		public ActionResult<string> BuyGame([FromBody]BuyGameRequest request)
+		public void BuyGame([FromBody]BuyGameRequest request)
 		{
 			try
 			{
 				_userService.BuyGame(request.userId, int.Parse(request.gameId));
-				return Ok();
 			}
 			catch (Exception e)
 			{
-				return BadRequest(new Error
-				{
-					Message = e.Message,
-					StackTrace = e.StackTrace.Trim(),
-				});
+				throw new Exception(e.Message, e.InnerException);
 			}
 		}
 	}
