@@ -10,6 +10,8 @@
 
 		public Game GetById(int id);
 
-		public Game[] ListUserGamesById(string id);
+		public GameItem[] ListUserGamesById(string id);
+
+		public GameItem[] ListGameItems(GameFilter filter);
 	}
 }

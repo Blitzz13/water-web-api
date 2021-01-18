@@ -12,29 +12,20 @@
 		}
 	],
 	"paths": {
-		"/Companies/Authenticate": {
+		"/Games/Add": {
 			"post": {
 				"tags": [
-					"Companies"
+					"Games"
 				],
-				"summary": "Authenticates the given login request",
-				"operationId": "Companies_Authenticate",
-				"parameters": [
-					{
-						"type": "string",
-						"name": "authorization",
-						"in": "header",
-						"description": "This is a test header",
-						"default": "Bearer "
-					}
-				],
+				"summary": "Creates a game",
+				"operationId": "Games_AddGame",
 				"requestBody": {
 					"x-name": "model",
-					"description": "AuthenticateRequestAuthentication request model",
+					"description": "AddGameRequest Add game request ",
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/AuthenticateRequest"
+								"$ref": "#/components/schemas/AddGameRequest"
 							}
 						}
 					},
@@ -43,11 +34,11 @@
 				},
 				"responses": {
 					"200": {
-						"description": "Authentication response",
+						"description": " Game object ",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/AuthenticateResponse"
+									"type": "string"
 								}
 							}
 						}
@@ -55,29 +46,126 @@
 				}
 			}
 		},
-		"/Companies/Register": {
+		"/Games/Remove/{id}": {
 			"post": {
 				"tags": [
-					"Companies"
+					"Games"
 				],
-				"summary": "Registers a user",
-				"operationId": "Companies_Register",
+				"summary": "Removes a game from the database",
+				"operationId": "Games_RemoveGame",
 				"parameters": [
 					{
-						"type": "string",
-						"name": "authorization",
-						"in": "header",
-						"description": "This is a test header",
-						"default": "Bearer "
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "StringUser Id",
+						"schema": {
+							"type": "string",
+							"nullable": true
+						},
+						"x-position": 1
 					}
 				],
+				"responses": {
+					"200": {
+						"description": " Game object ",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Games/Game/{id}": {
+			"get": {
+				"tags": [
+					"Games"
+				],
+				"summary": "Gets game by given id",
+				"operationId": "Games_GetGameById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "String Game id ",
+						"schema": {
+							"type": "string",
+							"nullable": true
+						},
+						"x-position": 1
+					}
+				],
+				"responses": {
+					"200": {
+						"description": " Game object ",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Game"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Games/User/Games/{id}": {
+			"get": {
+				"tags": [
+					"Games"
+				],
+				"summary": "Returns the purchased games for the given user id",
+				"operationId": "Games_ListUserGames",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "String User id ",
+						"schema": {
+							"type": "string",
+							"nullable": true
+						},
+						"x-position": 1
+					}
+				],
+				"responses": {
+					"200": {
+						"description": " Enumeration of game items ",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/GameItem"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Games/List": {
+			"post": {
+				"tags": [
+					"Games"
+				],
+				"summary": "Returns the purchased games for the given user id",
+				"operationId": "Games_ListGameItems",
 				"requestBody": {
-					"x-name": "model",
-					"description": "UserRegister user model",
+					"x-name": "filter",
+					"description": "GameFilter Game filter ",
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/User"
+								"$ref": "#/components/schemas/GameFilter"
 							}
 						}
 					},
@@ -86,11 +174,14 @@
 				},
 				"responses": {
 					"200": {
-						"description": "Ok response",
+						"description": " Enumeration of game items ",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/GameItem"
+									}
 								}
 							}
 						}
@@ -105,15 +196,6 @@
 				],
 				"summary": "Authenticates the given login request",
 				"operationId": "Users_Authenticate",
-				"parameters": [
-					{
-						"type": "string",
-						"name": "authorization",
-						"in": "header",
-						"description": "This is a test header",
-						"default": "Bearer "
-					}
-				],
 				"requestBody": {
 					"x-name": "model",
 					"description": "AuthenticateRequestAuthentication request model",
@@ -159,13 +241,6 @@
 							"nullable": true
 						},
 						"x-position": 1
-					},
-					{
-						"type": "string",
-						"name": "authorization",
-						"in": "header",
-						"description": "This is a test header",
-						"default": "Bearer "
 					}
 				],
 				"responses": {
@@ -189,15 +264,6 @@
 				],
 				"summary": "Authenticates the given login request",
 				"operationId": "Users_Test",
-				"parameters": [
-					{
-						"type": "string",
-						"name": "authorization",
-						"in": "header",
-						"description": "This is a test header",
-						"default": "Bearer "
-					}
-				],
 				"responses": {
 					"200": {
 						"description": "Authentication response",
@@ -219,15 +285,6 @@
 				],
 				"summary": "Registers a user",
 				"operationId": "Users_Register",
-				"parameters": [
-					{
-						"type": "string",
-						"name": "authorization",
-						"in": "header",
-						"description": "This is a test header",
-						"default": "Bearer "
-					}
-				],
 				"requestBody": {
 					"x-name": "model",
 					"description": "UserRegister user model",
@@ -245,12 +302,40 @@
 					"200": {
 						"description": "Ok response with message",
 						"content": {
-							"application/json": {
+							"application/octet-stream": {
 								"schema": {
-									"type": "string"
+									"type": "string",
+									"format": "binary"
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/Users/Buy/Game": {
+			"post": {
+				"tags": [
+					"Users"
+				],
+				"summary": "Adds a game to the user games enumeration",
+				"operationId": "Users_BuyGame",
+				"requestBody": {
+					"x-name": "request",
+					"description": "BuyGameRequestRegister user model",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BuyGameRequest"
+							}
+						}
+					},
+					"required": true,
+					"x-position": 1
+				},
+				"responses": {
+					"200": {
+						"description": "Ok response"
 					}
 				}
 			}
@@ -258,6 +343,286 @@
 	},
 	"components": {
 		"schemas": {
+			"AddGameRequest": {
+				"type": "object",
+				"description": "Represents add game request",
+				"additionalProperties": false,
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Gets or sets name",
+						"nullable": true
+					},
+					"description": {
+						"type": "string",
+						"description": "Gets or sets description",
+						"nullable": true
+					},
+					"price": {
+						"type": "number",
+						"description": "Gets or sets price",
+						"format": "decimal"
+					},
+					"rating": {
+						"type": "number",
+						"description": "Gets or sets rating",
+						"format": "float"
+					},
+					"state": {
+						"description": "Gets or sets state",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/GameState"
+							}
+						]
+					},
+					"coverImage": {
+						"type": "string",
+						"description": "Gets or sets cover image",
+						"nullable": true
+					},
+					"imageUrls": {
+						"type": "array",
+						"description": "Gets or sets image urls",
+						"nullable": true,
+						"items": {
+							"type": "string"
+						}
+					},
+					"genre": {
+						"description": "Gets or sets genre",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/Genre"
+							}
+						]
+					},
+					"isFeatured": {
+						"type": "boolean",
+						"description": "Gets or sets is featured"
+					},
+					"companyName": {
+						"type": "string",
+						"description": "Gets or sets compamy name",
+						"nullable": true
+					}
+				}
+			},
+			"GameState": {
+				"type": "string",
+				"description": "Representes enumeration of game states",
+				"x-enumNames": [
+					"Released",
+					"EarlyAccess",
+					"Preorder"
+				],
+				"enum": [
+					"Released",
+					"EarlyAccess",
+					"Preorder"
+				]
+			},
+			"Genre": {
+				"type": "string",
+				"description": "Representes enumeration of game genres",
+				"x-enumNames": [
+					"Cooperative",
+					"Action",
+					"ActionAdventure",
+					"Adventure",
+					"Rpg",
+					"Simulation",
+					"Strategy",
+					"Sport"
+				],
+				"enum": [
+					"Cooperative",
+					"Action",
+					"ActionAdventure",
+					"Adventure",
+					"Rpg",
+					"Simulation",
+					"Strategy",
+					"Sport"
+				]
+			},
+			"Game": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets id",
+						"nullable": true
+					},
+					"name": {
+						"type": "string",
+						"description": "Gets or sets name",
+						"nullable": true
+					},
+					"description": {
+						"type": "string",
+						"description": "Gets or sets description",
+						"nullable": true
+					},
+					"price": {
+						"type": "number",
+						"description": "Gets or sets price",
+						"format": "decimal"
+					},
+					"rating": {
+						"type": "number",
+						"description": "Gets or sets rating",
+						"format": "float"
+					},
+					"reviews": {
+						"type": "array",
+						"description": "Gets or sets reviews",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/Review"
+						}
+					},
+					"state": {
+						"description": "Gets or sets state",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/GameState"
+							}
+						]
+					},
+					"coverImage": {
+						"type": "string",
+						"description": "Gets or sets cover image",
+						"nullable": true
+					},
+					"imageUrls": {
+						"type": "array",
+						"description": "Gets or sets image urls",
+						"nullable": true,
+						"items": {
+							"type": "string"
+						}
+					},
+					"genre": {
+						"description": "Gets or sets genre",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/Genre"
+							}
+						]
+					},
+					"isFeatured": {
+						"type": "boolean",
+						"description": "Gets or sets is featured"
+					},
+					"companyName": {
+						"type": "string",
+						"description": "Gets or sets company name",
+						"nullable": true
+					}
+				}
+			},
+			"Review": {
+				"type": "object",
+				"description": "Represents review",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets id",
+						"nullable": true
+					},
+					"content": {
+						"type": "string",
+						"description": "Gets or sets content",
+						"nullable": true
+					},
+					"userId": {
+						"type": "string",
+						"description": "Gets or sets user id",
+						"nullable": true
+					},
+					"username": {
+						"type": "string",
+						"description": "Gets or sets username",
+						"nullable": true
+					},
+					"upvotes": {
+						"type": "integer",
+						"description": "Gets or sets upvotes",
+						"format": "int32"
+					}
+				}
+			},
+			"GameItem": {
+				"type": "object",
+				"description": "Represents game item",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets id",
+						"nullable": true
+					},
+					"price": {
+						"type": "number",
+						"description": "Gets or sets price",
+						"format": "decimal"
+					},
+					"rating": {
+						"type": "number",
+						"description": "Gets or sets rating",
+						"format": "float"
+					},
+					"coverImage": {
+						"type": "string",
+						"description": "Gets or sets cover image",
+						"nullable": true
+					},
+					"isFeatured": {
+						"type": "boolean",
+						"description": "Gets or sets is featured"
+					}
+				}
+			},
+			"GameFilter": {
+				"type": "object",
+				"description": "Represents game filter",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets id",
+						"nullable": true
+					},
+					"name": {
+						"type": "string",
+						"description": "Gets or sets name",
+						"nullable": true
+					},
+					"isFeatured": {
+						"type": "boolean",
+						"description": "Gets or sets is featured"
+					},
+					"genres": {
+						"type": "array",
+						"description": "Gets or sets genres",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/Genre"
+						}
+					},
+					"states": {
+						"type": "array",
+						"description": "Gets or sets states",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/GameState"
+						}
+					}
+				}
+			},
 			"AuthenticateResponse": {
 				"type": "object",
 				"description": "Representes authentication response",
@@ -340,6 +705,41 @@
 					}
 				}
 			},
+			"UserItem": {
+				"type": "object",
+				"description": "Represents authentication request",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets user id",
+						"nullable": true
+					},
+					"username": {
+						"type": "string",
+						"description": "Gets or sets username",
+						"nullable": true
+					},
+					"email": {
+						"type": "string",
+						"description": "Gets or sets email",
+						"nullable": true
+					},
+					"role": {
+						"description": "Gets or sets user role",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/UserRole"
+							}
+						]
+					},
+					"fullName": {
+						"type": "string",
+						"description": "Gets or sets full name",
+						"nullable": true
+					}
+				}
+			},
 			"User": {
 				"type": "object",
 				"description": "Representes user",
@@ -375,49 +775,30 @@
 					}
 				}
 			},
-			"UserItem": {
+			"BuyGameRequest": {
 				"type": "object",
+				"description": "Represents buy game request",
 				"additionalProperties": false,
 				"properties": {
-					"id": {
+					"userId": {
 						"type": "string",
 						"description": "Gets or sets user id",
 						"nullable": true
 					},
-					"username": {
+					"gameId": {
 						"type": "string",
-						"description": "Gets or sets username",
-						"nullable": true
-					},
-					"email": {
-						"type": "string",
-						"description": "Gets or sets email",
-						"nullable": true
-					},
-					"role": {
-						"description": "Gets or sets user role",
-						"oneOf": [
-							{
-								"$ref": "#/components/schemas/UserRole"
-							}
-						]
-					},
-					"fullName": {
-						"type": "string",
-						"description": "Gets or sets full name",
+						"description": "Gets or sets game id",
 						"nullable": true
 					}
 				}
 			}
 		},
 		"securitySchemes": {
-			"bearer": {
-				"type": "http",
+			"JWT": {
+				"type": "apiKey",
 				"description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
 				"name": "Authorization",
-				"in": "header",
-				"scheme": "bearer",
-				"bearerFormat": "JWT"
+				"in": "header"
 			}
 		}
 	}

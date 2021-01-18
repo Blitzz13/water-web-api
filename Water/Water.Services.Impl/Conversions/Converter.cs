@@ -18,6 +18,7 @@ namespace Water.Services.Impl.Conversions
 				Role = ConvertUserRoleToService(value.Role),
 			};
 		}
+
 		public static Company ConvertCompanyToService(DATA_MODELS.Company value)
 		{
 			return new Company
@@ -38,12 +39,24 @@ namespace Water.Services.Impl.Conversions
 			return new Game
 			{
 				Id = value.Id.ToString(),
+				Name = value.Name,
 				CompanyName = value.CompanyName,
 				CoverImage = value.CoverImage,
 				Description = value.Description,
 				Genre = ConvertGenreToService(value.Genre),
 				State = ConvertGameStateToService(value.State),
 				ImageUrls = images,
+				IsFeatured = value.IsFeatured,
+				Price = value.Price,
+			};
+		}
+
+		public static GameItem ConvertGameToItem(DATA_MODELS.Game value)
+		{
+			return new GameItem
+			{
+				Id = value.Id.ToString(),
+				CoverImage = value.CoverImage,
 				IsFeatured = value.IsFeatured,
 				Price = value.Price,
 			};
@@ -139,6 +152,7 @@ namespace Water.Services.Impl.Conversions
 			
 			return new DATA_MODELS.Game
 			{
+				Name = value.Name,
 				CompanyName = value.CompanyName,
 				CoverImage = value.CoverImage,
 				Description = value.Description,

@@ -86,11 +86,11 @@ namespace Water.Controllers
 		/// <response code="200"><see cref="Game" /> Game object </response>
 		/// <response code="400"><see cref="Error"/> Bad request with the exception </response>
 		[HttpGet("Game/{id?}")]
-		public ActionResult<Entities.Game> GetGameById([FromRoute]int id)
+		public ActionResult<Entities.Game> GetGameById([FromRoute]string id)
 		{
 			try
 			{
-				Entities.Game game = Converter.ConvertGameToEntity(_gamesService.GetById(id));
+				Entities.Game game = Converter.ConvertGameToEntity(_gamesService.GetById(int.Parse(id)));
 
 				return Ok(game);
 			}
@@ -109,14 +109,41 @@ namespace Water.Controllers
 		/// </summary>
 		/// <param name="id"><see cref="string"/> User id </param>
 		/// <returns> Enumeration of games </returns>
-		/// <response code="200"><see cref="Game" /> Enumeration of games </response>
+		/// <response code="200"><see cref="GameItem" /> Enumeration of game items </response>
 		/// <response code="400"><see cref="Error"/> Bad request with the exception </response>
-		[HttpGet("User/Games/{id?}")]
-		public ActionResult<Entities.Game[]> ListUserGames([FromRoute]string id)
+		[HttpGet("User/Games/{id}")]
+		public ActionResult<Entities.GameItem[]> ListUserGames([FromRoute]string id)
 		{
 			try
 			{
-				Entities.Game[] games = _gamesService.ListUserGamesById(id).Select(Converter.ConvertGameToEntity).ToArray();
+				Entities.GameItem[] games = _gamesService.ListUserGamesById(id).Select(Converter.ConvertGameItemToEntity).ToArray();
+
+				return Ok(games);
+			}
+			catch (Exception e)
+			{
+				return BadRequest(new Error
+				{
+					Message = e.Message,
+					StackTrace = e.StackTrace.Trim(),
+				});
+			}
+		}
+
+		/// <summary>
+		/// Returns the purchased games for the given user id
+		/// </summary>
+		/// <param name="filter"><see cref="GameFilter"/> Game filter </param>
+		/// <returns> Enumeration of game game items </returns>
+		/// <response code="200"><see cref="GameItem" /> Enumeration of game items </response>
+		/// <response code="400"><see cref="Error"/> Bad request with the exception </response>
+		[HttpPost("List")]
+		public ActionResult<Entities.GameItem[]> ListGameItems([FromBody]Entities.GameFilter filter)
+		{
+			try
+			{
+				Services.GameFilter serviceFilter = Converter.ConvertGameFilterToService(filter);
+				Entities.GameItem[] games = _gamesService.ListGameItems(serviceFilter).Select(Converter.ConvertGameItemToEntity).ToArray();
 
 				return Ok(games);
 			}

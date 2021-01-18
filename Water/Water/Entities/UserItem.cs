@@ -1,5 +1,8 @@
 ﻿namespace Water.Entities
 {
+	/// <summary>
+	/// Represents authentication request
+	/// </summary>
 	public class UserItem
 	{
 

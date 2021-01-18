@@ -39,27 +39,27 @@ namespace Water.Services.Impl
 			return game.Id;
 		}
 
-		public Game GetById(int id)
-		{
-			DATA.Models.Game game = _context.Games.FirstOrDefault(x => x.Id == id);
-			return Conversions.Converter.ConvertGameToService(game);
-		}
-
 		public Game[] FindGamesByName(string name)
 		{
 			Game[] games = _context.Games.Where(x => x.Name.Contains(name)).Select(Conversions.Converter.ConvertGameToService).ToArray();
 			return games;
 		}
 
-		public Game[] ListUserGamesById(string userId)
+		public Game GetById(int id)
 		{
-			Game[] games = _context.Users.Include(user => user.UserGames)
+			DATA.Models.Game game = _context.Games.Include(game => game.Images).Where(x => x.Id == id).First();
+			return Conversions.Converter.ConvertGameToService(game);
+		}
+
+		public GameItem[] ListUserGamesById(string userId)
+		{
+			GameItem[] games = _context.Users.Include(user => user.UserGames)
 				.ThenInclude(row => row.Game)
 				.First(x => x.Id == userId)
 				.UserGames
-				.Select(x => Conversions.Converter.ConvertGameToService(x.Game))
+				.Select(x => Conversions.Converter.ConvertGameToItem(x.Game))
 				.ToArray();
-			
+
 			return games;
 		}
 
@@ -69,6 +69,48 @@ namespace Water.Services.Impl
 
 			_context.Games.Remove(game);
 			_context.SaveChanges();
+		}
+
+		public GameItem[] ListGameItems(GameFilter filter)
+		{
+			var games = new List<GameItem>();
+
+			if (filter.Id != null)
+			{
+				DATA.Models.Game game = _context.Games.FirstOrDefault(x => x.Id == int.Parse(filter.Id));
+				games.Add(Conversions.Converter.ConvertGameToItem(game));
+				return games.ToArray();
+			}
+
+			if (filter.isFeatured)
+			{
+				DATA.Models.Game[] dataGames = _context.Games.Where(x => x.IsFeatured == filter.isFeatured).ToArray();
+				games.AddRange(dataGames.Select(x => Conversions.Converter.ConvertGameToItem(x)));
+			}
+
+			if (filter.Name != null)
+			{
+				DATA.Models.Game[] dataGames = _context.Games.Where(x => x.Name == filter.Name).ToArray();
+				games.AddRange(dataGames.Select(x => Conversions.Converter.ConvertGameToItem(x)));
+			}
+
+			if (filter.Genres.Length > 0)
+			{
+				int dataGenre = (int)Conversions.Converter.ConvertGenreToData(filter.Genres[0]);
+				DATA.Models.Game[] dataGames = _context.Games.Where(x => (int)x.Genre == dataGenre).ToArray();
+				games.AddRange(dataGames.Select(x => Conversions.Converter.ConvertGameToItem(x)));
+			}
+
+			if (filter.States.Length > 0)
+			{
+				int dataState = (int)Conversions.Converter.ConvertGameStateToData(filter.States[0]);
+				DATA.Models.Game[] dataGames = _context.Games.Where(x => (int)x.State == dataState).ToArray();
+				games.AddRange(dataGames.Select(x => Conversions.Converter.ConvertGameToItem(x)));
+			}
+
+			games = games.Distinct().ToList();
+
+			return games.ToArray();
 		}
 	}
 }
