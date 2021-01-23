@@ -111,9 +111,9 @@ namespace Water.Services.Impl
 		public void BuyGame(string userId, int gameId)
 		{
 			DATA.Models.Game game = _context.Games.FirstOrDefault(g => g.Id == gameId);
-			if(game != null)
+			if(game == null)
 			{
-				return;
+				throw new Exception("Game not found");
 			}
 
 			DATA.Models.User user = _context.Users.FirstOrDefault(u => u.Id == userId);
