@@ -112,5 +112,58 @@ namespace Water.Services.Impl
 
 			return games.ToArray();
 		}
+
+		public int UpdateGame(Game model)
+		{
+			DATA.Models.Game game = _context.Games.Include(game => game.Images).Where(x => x.Id == int.Parse(model.Id)).First();
+
+			if (game == null)
+			{
+				throw new Exception($"Game \"{model.Name}\" does not exist.");
+			}
+
+			if (!string.IsNullOrEmpty(model.Name))
+			{
+				game.Name = model.Name;
+			}
+
+			if (!string.IsNullOrEmpty(model.CompanyName))
+			{
+				game.CompanyName = model.CompanyName;
+			}
+
+			if (!string.IsNullOrEmpty(model.Description))
+			{
+				game.Description = model.Description;
+			}
+
+			if (!string.IsNullOrEmpty(model.CoverImage))
+			{
+				game.CoverImage = model.CoverImage;
+			}
+
+			if (model.ImageUrls.Count > 0)
+			{
+				game.Images.Clear();
+				
+				foreach (string url in model.ImageUrls)
+				{
+					game.Images.Add(new DATA.Models.GameImage
+					{
+						Url = url
+					});
+				}
+			}
+
+			game.Genre = Conversions.Converter.ConvertGenreToData(model.Genre);
+
+			game.State = Conversions.Converter.ConvertGameStateToData(model.State);
+
+			game.IsFeatured = model.IsFeatured;
+
+			_context.SaveChanges();
+
+			return game.Id;
+		}
 	}
 }

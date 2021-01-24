@@ -46,6 +46,40 @@
 				}
 			}
 		},
+		"/Games/Update": {
+			"post": {
+				"tags": [
+					"Games"
+				],
+				"summary": "Updates a game",
+				"operationId": "Games_UpdateGame",
+				"requestBody": {
+					"x-name": "model",
+					"description": "UpdateGameRequest Update game request ",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateGameRequest"
+							}
+						}
+					},
+					"required": true,
+					"x-position": 1
+				},
+				"responses": {
+					"200": {
+						"description": " Game object ",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/Games/Remove/{id}": {
 			"post": {
 				"tags": [
@@ -445,6 +479,76 @@
 					"Strategy",
 					"Sport"
 				]
+			},
+			"UpdateGameRequest": {
+				"type": "object",
+				"description": "Represents add game request",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Gets or sets id",
+						"nullable": true
+					},
+					"name": {
+						"type": "string",
+						"description": "Gets or sets name",
+						"nullable": true
+					},
+					"description": {
+						"type": "string",
+						"description": "Gets or sets description",
+						"nullable": true
+					},
+					"price": {
+						"type": "number",
+						"description": "Gets or sets price",
+						"format": "decimal"
+					},
+					"rating": {
+						"type": "number",
+						"description": "Gets or sets rating",
+						"format": "float"
+					},
+					"state": {
+						"description": "Gets or sets state",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/GameState"
+							}
+						]
+					},
+					"coverImage": {
+						"type": "string",
+						"description": "Gets or sets cover image",
+						"nullable": true
+					},
+					"imageUrls": {
+						"type": "array",
+						"description": "Gets or sets image urls",
+						"nullable": true,
+						"items": {
+							"type": "string"
+						}
+					},
+					"genre": {
+						"description": "Gets or sets genre",
+						"oneOf": [
+							{
+								"$ref": "#/components/schemas/Genre"
+							}
+						]
+					},
+					"isFeatured": {
+						"type": "boolean",
+						"description": "Gets or sets is featured"
+					},
+					"companyName": {
+						"type": "string",
+						"description": "Gets or sets compamy name",
+						"nullable": true
+					}
+				}
 			},
 			"Game": {
 				"type": "object",

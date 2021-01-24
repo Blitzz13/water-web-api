@@ -36,6 +36,23 @@ namespace Water.Controllers
 			};
 		}
 
+		public static Services.Game ConvertUpdateGameRequestToService(Entities.UpdateGameRequest value)
+		{
+			return new Services.Game
+			{
+				Id = value.Id,
+				Name = value.Name,
+				CompanyName = value.CompanyName,
+				CoverImage = value.CoverImage,
+				Description = value.Description,
+				Genre = ConvertGenreToService(value.Genre),
+				State = ConvertGameStateToService(value.State),
+				ImageUrls = value.ImageUrls,
+				IsFeatured = value.IsFeatured,
+				Price = value.Price,
+			};
+		}
+
 		public static Services.GameState ConvertGameStateToService(Entities.GameState value)
 		{
 			switch (value)

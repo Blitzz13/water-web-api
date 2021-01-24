@@ -24,6 +24,15 @@
             <response code="200"><see cref="T:Water.Entities.Game" /> Game object </response>
             <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
         </member>
+        <member name="M:Water.Controllers.GamesController.UpdateGame(Water.Entities.UpdateGameRequest)">
+            <summary>
+            Updates a game
+            </summary>
+            <param name="model"><see cref="T:Water.Entities.UpdateGameRequest"/> Update game request </param>
+            <returns> The game id </returns>
+            <response code="200"><see cref="T:Water.Entities.Game" /> Game object </response>
+            <response code="400"><see cref="T:Water.Entities.Error"/> Bad request with the exception </response>
+        </member>
         <member name="M:Water.Controllers.GamesController.RemoveGame(System.String)">
             <summary>
             Removes a game from the database
@@ -451,6 +460,66 @@
         <member name="P:Water.Entities.TokenProvider.ExpiresInSeconds">
             <summary>
             Gets or sets token expiration in seconds
+            </summary>
+        </member>
+        <member name="T:Water.Entities.UpdateGameRequest">
+            <summary>
+            Represents add game request
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.Id">
+            <summary>
+            Gets or sets id
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.Name">
+            <summary>
+            Gets or sets name
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.Description">
+            <summary>
+            Gets or sets description
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.Price">
+            <summary>
+            Gets or sets price
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.Rating">
+            <summary>
+            Gets or sets rating
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.State">
+            <summary>
+            Gets or sets state
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.CoverImage">
+            <summary>
+            Gets or sets cover image
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.ImageUrls">
+            <summary>
+            Gets or sets image urls
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.Genre">
+            <summary>
+            Gets or sets genre
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.IsFeatured">
+            <summary>
+            Gets or sets is featured
+            </summary>
+        </member>
+        <member name="P:Water.Entities.UpdateGameRequest.CompanyName">
+            <summary>
+            Gets or sets compamy name
             </summary>
         </member>
         <member name="T:Water.Entities.User">

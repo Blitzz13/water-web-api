@@ -15,6 +15,12 @@ export interface IGamesClient {
      */
     addGame(model: AddGameRequest): Promise<string>;
     /**
+     * Updates a game
+     * @param model UpdateGameRequest Update game request
+     * @return Game object
+     */
+    updateGame(model: UpdateGameRequest): Promise<string>;
+    /**
      * Removes a game from the database
      * @param id StringUser Id
      * @return Game object
@@ -76,6 +82,48 @@ export class GamesClient implements IGamesClient {
     }
 
     protected processAddGame(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <string>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(<any>null);
+    }
+
+    /**
+     * Updates a game
+     * @param model UpdateGameRequest Update game request
+     * @return Game object
+     */
+    updateGame(model: UpdateGameRequest): Promise<string> {
+        let url_ = this.baseUrl + "/Games/Update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(model);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateGame(_response);
+        });
+    }
+
+    protected processUpdateGame(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -541,6 +589,32 @@ export enum Genre {
     Simulation = "Simulation",
     Strategy = "Strategy",
     Sport = "Sport",
+}
+
+/** Represents add game request */
+export interface UpdateGameRequest {
+    /** Gets or sets id */
+    id?: string | undefined;
+    /** Gets or sets name */
+    name?: string | undefined;
+    /** Gets or sets description */
+    description?: string | undefined;
+    /** Gets or sets price */
+    price?: number;
+    /** Gets or sets rating */
+    rating?: number;
+    /** Gets or sets state */
+    state?: GameState;
+    /** Gets or sets cover image */
+    coverImage?: string | undefined;
+    /** Gets or sets image urls */
+    imageUrls?: string[] | undefined;
+    /** Gets or sets genre */
+    genre?: Genre;
+    /** Gets or sets is featured */
+    isFeatured?: boolean;
+    /** Gets or sets compamy name */
+    companyName?: string | undefined;
 }
 
 export interface Game {

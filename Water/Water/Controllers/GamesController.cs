@@ -53,6 +53,33 @@ namespace Water.Controllers
 		}
 
 		/// <summary>
+		/// Updates a game
+		/// </summary>
+		/// <param name="model"><see cref="UpdateGameRequest"/> Update game request </param>
+		/// <returns> The game id </returns>
+		/// <response code="200"><see cref="Game" /> Game object </response>
+		/// <response code="400"><see cref="Error"/> Bad request with the exception </response>
+		[HttpPost("Update")]
+		[Authorize]
+		[Authenticate]
+		public ActionResult<string> UpdateGame([FromBody]UpdateGameRequest model)
+		{
+			try
+			{
+				int id = _gamesService.UpdateGame(Converter.ConvertUpdateGameRequestToService(model));
+				return Ok(id);
+			}
+			catch (Exception e)
+			{
+				return BadRequest(new Error
+				{
+					Message = e.Message,
+					StackTrace = e.StackTrace.Trim(),
+				});
+			}
+		}
+
+		/// <summary>
 		/// Removes a game from the database
 		/// </summary>
 		/// <param name="id"><see cref="string"/>User Id</param>

@@ -4,6 +4,8 @@
 	{
 		public int AddGame(Game model);
 
+		public int UpdateGame(Game model);
+
 		public void Remove(string id);
 
 		public Game[] FindGamesByName(string name);
