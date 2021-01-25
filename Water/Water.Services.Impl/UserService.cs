@@ -84,6 +84,7 @@ namespace Water.Services.Impl
 				Password = password,
 				Email = model.Email,
 				FullName = model?.FullName,
+				Role = Conversions.Converter.ConvertUserRoleToData(model.Role),
 			};
 
 			_context.Add(user);

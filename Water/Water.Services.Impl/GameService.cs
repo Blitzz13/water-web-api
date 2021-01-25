@@ -90,7 +90,7 @@ namespace Water.Services.Impl
 
 			if (filter.Name != null)
 			{
-				DATA.Models.Game[] dataGames = _context.Games.Where(x => x.Name == filter.Name).ToArray();
+				DATA.Models.Game[] dataGames = _context.Games.Where(x => x.Name.Contains(filter.Name)).ToArray();
 				games.AddRange(dataGames.Select(x => Conversions.Converter.ConvertGameToItem(x)));
 			}
 
